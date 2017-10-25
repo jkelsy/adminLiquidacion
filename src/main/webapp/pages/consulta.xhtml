@@ -1,0 +1,115 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:o="http://omnifaces.org/ui">
+    <ui:composition template="/templates/layout.xhtml">
+        <ui:define name="header">
+            <h:outputStylesheet library="bootstrap" name="css/bootstrap.min.css"/>
+            <h:outputStylesheet library="css" name="sb-admin-2.css"/>
+            <h:outputStylesheet library="css" name="agenda.css"/>
+        </ui:define>
+        <ui:define name="content">
+            <f:metadata>                
+                <f:viewAction action="#{consulta.iniciar()}"  />
+            </f:metadata>
+            <h:form id="form_cargar">
+                <div class="row">                
+                    <div class="col-lg-12">
+                        <p:dataTable value="#{consulta.consultaList}" 
+                                     var="item"                                                      
+                                     selection="#{consulta.consultaSelected}"
+                                     rowKey="#{item.id}"
+                                     selectionMode="single"                                                                                                          
+                                     id="tableConsulta"                                     
+                                     widgetVar="tableConsulta">
+                            <p:ajax event="rowSelect" listener="#{consulta.onRowSelect(event)}" update="@widgetVar(panelEditar)"/>
+                            <f:facet name="header">
+                                <h:outputText value="Listado de Consultas"/>
+                            </f:facet>
+                            <p:column headerText="ID">
+                                <h:outputText value="#{item.id}"/>
+                            </p:column>
+                            <p:column headerText="Nombre" filterBy="#{item.nombre}" filterMatchMode="exact">                                                
+                                <h:outputText value="#{item.nombre}"/>                                                                                          
+                            </p:column>
+                            <p:column headerText="Descripcion">                                                
+                                <h:outputText value="#{item.descripcion}"/>                                                                                                
+                            </p:column>
+                            <p:column headerText="Datasource">                                                
+                                <h:outputText value="#{item.nombreDatasource}"/>
+                            </p:column>                                            
+                        </p:dataTable>
+                        <hr/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <p:panel widgetVar="panelEditar" header="Crear / Editar">
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <label for="nombre">Nombre</label>
+                                    <p:inputText value="#{consulta.consultaInstance.nombre}"/>                                
+                                </div>
+                                <div class="col-lg-4">
+                                    <label for="descripcion">Descripcion</label>
+                                    <p:inputText value="#{consulta.consultaInstance.descripcion}"/>                                
+                                </div>
+                                <div class="col-lg-4">
+                                    <label for="datasource">Datasource</label>
+                                    <p:selectOneMenu id="datasource" widgetVar="datasource" value="#{consulta.consultaInstance.nombreDatasource}">
+                                        <f:selectItem noSelectionOption="true" itemLabel="" />
+                                        <f:selectItems value="#{ndsService.datasources}"
+                                                       var="nombre"
+                                                       itemLabel="#{nombre.nombre}"
+                                                       itemValue="#{nombre}"/>
+                                        <o:converter converterId="omnifaces.SelectItemsConverter" list="#{ndsService.datasources}" />
+                                    </p:selectOneMenu>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <label for="sql">SQL</label>
+                                    <p:inputTextarea widgetVar="sql" id="sql" value="#{consulta.consultaInstance.textoSql}" rows="5" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <p:panelGrid style="width: 100%;" styleClass="ui-noborder" >
+                                        <p:commandButton actionListener="#{consulta.resultado()}" value="Resultado" update="@widgetVar(tableEstudiantes)"/>
+                                        <p:commandButton actionListener="#{consulta.guardar()}" value="Guardar" update="tableConsulta @widgetVar(panelEditar)"/>
+                                        <p:commandButton actionListener="#{consulta.cancelar()}" value="Cancelar" update="@widgetVar(panelEditar)"/>
+                                        <p:commandButton actionListener="#{consulta.eliminar()}" value="Eliminar" update="tableConsulta @widgetVar(panelEditar)"/>
+                                    </p:panelGrid>
+                                </div>
+                            </div>
+                        </p:panel>                        
+                    </div>
+                    <div class="col-lg-6">
+                        <p:panel header="Resultado de Consulta">
+                            <p:dataTable widgetVar="tableEstudiantes" value="#{consulta.consultaEstudiantes}" var="item">
+                                <p:column headerText="PEOPLE_CODE_ID">
+                                    ${item.PEOPLE_CODE_ID}
+                                </p:column>
+                                <p:column headerText="Apellidos">
+                                    ${item.apellidos}
+                                </p:column>
+                                <p:column headerText="Nombres">
+                                    ${item.nombres}
+                                </p:column>
+                                <p:column headerText="Codigo Programa">
+                                    ${item.codigoPrograma}
+                                </p:column>
+                                <p:column headerText="Nombre Programa">
+                                    ${item.nombrePrograma}
+                                </p:column>
+                                
+                            </p:dataTable>
+                        </p:panel>
+                    </div>
+                </div>                
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

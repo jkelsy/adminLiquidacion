@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jpa:entity-mappings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:java="http://jcp.org/en/jsr/detail?id=270" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jpa="http://java.sun.com/xml/ns/persistence/orm" pkg="com.unicor.liquidacionmatricula.db" v="4.2" rws="_149650462833918" Pws="_149650462833918" cws="_149650462833918" persistenceUnitName="LiquidacionPU" sm="false" xs="false" id="_14965046275641" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_1.xsd">
+    <jpa:entity xre="false" compositePrimaryKeyClass="EstudiantePK" abs="false" class="Estudiante" v="true" m="false" rootElement="_14965046275641" id="_14965046276012">
+        <jpa:ts e="true"/>
+        <jpa:hc e="true"/>
+        <jpa:eq e="true"/>
+        <jpa:inf e="true" n="java.io.Serializable"/>
+        <jpa:attributes>
+            <jpa:basic attribute-type="String" v="true" name="PEOPLE_CODE" ft="false" id="_14965046276174">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+                <jpa:column name="nombre" unique="false" nullable="true" insertable="true" updatable="true"/>
+            </jpa:basic>
+            <jpa:basic attribute-type="String" v="true" name="PEOPLE_ID" id="_149650479562625">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:basic attribute-type="String" v="true" name="PEOPLE_CODE_ID" id="_149650486626526">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:basic attribute-type="String" v="true" name="UserName" id="_149650487801427">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:basic attribute-type="int" v="true" name="estrato" id="_149650499127928">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:basic attribute-type="int" v="true" name="patrimonio" id="_149650507412829">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:basic attribute-type="int" v="true" name="ingreso" id="_149650511794130">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:id attribute-type="Long" v="true" name="id" ft="false" id="_14965046276173">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+                <jpa:generated-value strategy="IDENTITY"/>
+            </jpa:id>
+        </jpa:attributes>
+        <jpa:nq e="false" name="Estudiante.findByPEOPLE_ID">
+            <jpa:query>Select e from Estudiante e where e.PEOPLE_ID=:PEOPLE_ID</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Estudiante.findByPEOPLE_CODE_ID">
+            <jpa:query>Select e from Estudiante e where e.PEOPLE_CODE_ID=:PEOPLE_CODE_ID</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Estudiante.findByUserName">
+            <jpa:query>Select e from Estudiante e where e.UserName=:UserName</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Estudiante.findByEstrato">
+            <jpa:query>Select e from Estudiante e where e.estrato=:estrato</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Estudiante.findByPatrimonio">
+            <jpa:query>Select e from Estudiante e where e.patrimonio=:patrimonio</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Estudiante.findByIngreso">
+            <jpa:query>Select e from Estudiante e where e.ingreso=:ingreso</jpa:query>
+        </jpa:nq>
+        <jpa:el/>
+    </jpa:entity>
+    <jpa:entity name="Permiso" xre="false" compositePrimaryKeyClass="PermisoPK" abs="false" class="Permiso" v="true" m="false" rootElement="_14965046275641" id="_14965046276395">
+        <jpa:ts e="true"/>
+        <jpa:hc e="true"/>
+        <jpa:eq e="true"/>
+        <jpa:inf e="true" n="java.io.Serializable"/>
+        <jpa:attributes>
+            <jpa:many-to-one optional="true" primaryKey="false" connected-entity-id="_14965046276529" v="true" name="usuario" ft="false" id="_14965046276397">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+                <jpa:join-column name="USUARIO_ID" unique="false" nullable="true" insertable="true" updatable="true"/>
+            </jpa:many-to-one>
+            <jpa:many-to-one optional="true" primaryKey="false" connected-entity-id="_149650462766615" v="true" name="rol" ft="false" id="_14965046276398">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+                <jpa:join-column name="ROL_ID" unique="false" nullable="true" insertable="true" updatable="true"/>
+            </jpa:many-to-one>
+            <jpa:id attribute-type="Long" v="true" name="id" ft="false" id="_14965046276396">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+                <jpa:generated-value strategy="IDENTITY"/>
+            </jpa:id>
+        </jpa:attributes>
+        <jpa:el/>
+        <jpa:table name="sec_permiso"/>
+    </jpa:entity>
+    <jpa:entity name="Usuario" xre="false" compositePrimaryKeyClass="UsuarioPK" abs="false" class="Usuario" v="true" m="false" rootElement="_14965046275641" id="_14965046276529">
+        <jpa:ts e="true"/>
+        <jpa:hc e="true"/>
+        <jpa:eq e="true"/>
+        <jpa:inf e="true" n="java.io.Serializable"/>
+        <jpa:attributes>
+            <jpa:basic attribute-type="String" v="true" name="password" ft="false" id="_149650462765211">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+                <jpa:column name="usr_password" unique="false" nullable="true" insertable="true" updatable="true"/>
+            </jpa:basic>
+            <jpa:basic attribute-type="String" v="true" name="login" ft="false" id="_149650462765212">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+                <jpa:column name="usr_login" unique="true" nullable="true" insertable="true" updatable="true"/>
+            </jpa:basic>
+            <jpa:basic attribute-type="Boolean" v="true" name="activo" ft="false" id="_149650462765313">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:id attribute-type="Long" v="true" name="id" ft="false" id="_149650462765210">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+                <jpa:generated-value strategy="IDENTITY"/>
+            </jpa:id>
+        </jpa:attributes>
+        <jpa:el/>
+        <jpa:table name="sec_usuario"/>
+    </jpa:entity>
+    <jpa:entity name="Rol" xre="false" compositePrimaryKeyClass="RolPK" abs="false" class="Rol" v="true" m="false" rootElement="_14965046275641" id="_149650462766615">
+        <jpa:ts e="true"/>
+        <jpa:hc e="true"/>
+        <jpa:eq e="true"/>
+        <jpa:inf e="true" n="java.io.Serializable"/>
+        <jpa:attributes>
+            <jpa:basic attribute-type="String" v="true" name="nombre" ft="false" id="_149650462766717">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+                <jpa:column name="rol_nombre" unique="false" nullable="true" insertable="true" updatable="true"/>
+            </jpa:basic>
+            <jpa:id attribute-type="Long" v="true" name="id" ft="false" id="_149650462766616">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+                <jpa:generated-value strategy="IDENTITY"/>
+            </jpa:id>
+        </jpa:attributes>
+        <jpa:el/>
+        <jpa:table name="sec_rol"/>
+    </jpa:entity>
+    <jpa:entity xre="false" compositePrimaryKeyClass="EstratoPK" abs="false" class="Estrato" v="true" m="false" rootElement="_14965046275641" id="_1496505451654">
+        <jpa:ts e="true"/>
+        <jpa:hc e="true"/>
+        <jpa:eq e="true"/>
+        <jpa:ath>jk</jpa:ath>
+        <jpa:attributes>
+            <jpa:basic attribute-type="int" v="true" name="anyo" id="_149650551782235">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:basic attribute-type="int" v="true" name="estrato" id="_149650554504236">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:basic attribute-type="Double" v="true" name="valor_smlv" id="_149650556732437">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:id attribute-type="Long" v="true" name="id" id="_149650545165831">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+                <jpa:generated-value strategy="IDENTITY"/>
+            </jpa:id>
+        </jpa:attributes>
+        <jpa:nq e="false" name="Estrato.findAll">
+            <jpa:query>Select e from Estrato e</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Estrato.findByAnyo">
+            <jpa:query>Select e from Estrato e where e.anyo=:anyo</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Estrato.findByEstrato">
+            <jpa:query>Select e from Estrato e where e.estrato=:estrato</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Estrato.findByValor_smlv">
+            <jpa:query>Select e from Estrato e where e.valor_smlv=:valor_smlv</jpa:query>
+        </jpa:nq>
+        <jpa:el/>
+    </jpa:entity>
+    <jpa:entity xre="false" compositePrimaryKeyClass="PatrimonioPK" abs="false" class="Patrimonio" v="true" m="false" rootElement="_14965046275641" id="_149650585960438">
+        <jpa:ts e="true"/>
+        <jpa:hc e="true"/>
+        <jpa:eq e="true"/>
+        <jpa:ath>jk</jpa:ath>
+        <jpa:attributes>
+            <jpa:basic attribute-type="int" v="true" name="anyo" id="_149650585960439">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:basic attribute-type="int" v="true" name="desde" id="_149650585960440">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:basic attribute-type="int" v="true" name="hasta" id="_149650594760744">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:basic attribute-type="Double" v="true" name="valor_smlv" id="_149650585960441">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:id attribute-type="Long" v="true" name="id" id="_149650585960442">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+                <jpa:generated-value strategy="IDENTITY"/>
+            </jpa:id>
+        </jpa:attributes>
+        <jpa:nq e="false" name="Patrimonio.findAll">
+            <jpa:query>Select e from Patrimonio e</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Patrimonio.findByAnyo">
+            <jpa:query>Select e from Patrimonio e where e.anyo=:anyo</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="desde.findByPatrimonio">
+            <jpa:query>Select e from Patrimonio e where e.Patrimonio=:Patrimonio</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Patrimonio.findByValor_smlv">
+            <jpa:query>Select e from Patrimonio e where e.valor_smlv=:valor_smlv</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Patrimonio.findByHasta">
+            <jpa:query>Select p from Patrimonio p where p.hasta=:hasta</jpa:query>
+        </jpa:nq>
+        <jpa:el/>
+    </jpa:entity>
+    <jpa:entity xre="false" compositePrimaryKeyClass="IngresoPK" abs="false" class="Ingreso" v="true" m="false" rootElement="_14965046275641" id="_149650602126845">
+        <jpa:ts e="true"/>
+        <jpa:hc e="true"/>
+        <jpa:eq e="true"/>
+        <jpa:ath>jk</jpa:ath>
+        <jpa:attributes>
+            <jpa:basic attribute-type="int" v="true" name="anyo" id="_149650602126846">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:basic attribute-type="int" v="true" name="desde" id="_149650602126847">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:basic attribute-type="int" v="true" name="hasta" id="_149650602126848">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:basic attribute-type="Double" v="true" name="valor_smlv" id="_149650602126849">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:id attribute-type="Long" v="true" name="id" id="_149650602126850">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+                <jpa:generated-value strategy="IDENTITY"/>
+            </jpa:id>
+        </jpa:attributes>
+        <jpa:nq e="false" name="Ingreso.findAll">
+            <jpa:query>Select e from Ingreso e</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Ingreso.findByAnyo">
+            <jpa:query>Select e from Ingreso e where e.anyo=:anyo</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="desde.findByIngreso">
+            <jpa:query>Select e from Ingreso e where e.Ingreso=:Ingreso</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Ingreso.findByValor_smlv">
+            <jpa:query>Select e from Ingreso e where e.valor_smlv=:valor_smlv</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="Ingreso.findByHasta">
+            <jpa:query>Select p from Ingreso p where p.hasta=:hasta</jpa:query>
+        </jpa:nq>
+        <jpa:el/>
+    </jpa:entity>
+    <jpa:entity xre="false" compositePrimaryKeyClass="ConceptoVariablePK" abs="false" class="ConceptoVariable" v="true" m="false" rootElement="_14965046275641" id="_149650685034352">
+        <jpa:ts e="true"/>
+        <jpa:hc e="true"/>
+        <jpa:eq e="true"/>
+        <jpa:ath>jk</jpa:ath>
+        <jpa:attributes>
+            <jpa:basic attribute-type="int" v="true" name="anyo" id="_149650685034453">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:basic attribute-type="int" v="true" name="semestre" id="_149650685034454">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:basic attribute-type="Double" v="true" name="valor" id="_149650685034455">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:basic attribute-type="String" v="true" name="operacion" id="_149650703332258">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+            </jpa:basic>
+            <jpa:id attribute-type="Long" v="true" name="id" id="_149650685034456">
+                <jpa:bv/>
+                <jpa:kbv/>
+                <jpa:vbv/>
+                <jpa:generated-value strategy="IDENTITY"/>
+            </jpa:id>
+        </jpa:attributes>
+        <jpa:nq e="false" name="ConceptoVariable.findAll">
+            <jpa:query>Select e from ConceptoVariable e</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="ConceptoVariable.findByAnyo">
+            <jpa:query>Select e from ConceptoVariable e where e.anyo=:anyo</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="semestre.findByConceptoVariable">
+            <jpa:query>Select e from ConceptoVariable e where e.ConceptoVariable=:ConceptoVariable</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="ConceptoVariable.findByValor">
+            <jpa:query>Select e from ConceptoVariable e where e.valor=:valor</jpa:query>
+        </jpa:nq>
+        <jpa:nq e="false" name="ConceptoVariable.findByOperacion">
+            <jpa:query>Select c from ConceptoVariable c where c.operacion=:operacion</jpa:query>
+        </jpa:nq>
+        <jpa:el/>
+    </jpa:entity>
+    <jpa:snp loc="BEFORE_PACKAGE" e="true">/**
+ * This file was generated by the Jeddict
+ */</jpa:snp>
+    <jpa:wsl>
+        <jpa:ws n="Main" id="_149650462833918">
+            <i ref="_149650462766615" x="412" y="12">
+                <el/>
+            </i>
+            <i ref="_149650685034352" x="270" y="411">
+                <el/>
+            </i>
+            <i ref="_14965046276529" x="8" y="12">
+                <el/>
+            </i>
+            <i ref="_14965046276012" x="8" y="205">
+                <el/>
+            </i>
+            <i ref="_149650585960438" x="461" y="178">
+                <el/>
+            </i>
+            <i ref="_149650602126845" x="523" y="345">
+                <el/>
+            </i>
+            <i ref="_14965046276395" x="204" y="12">
+                <el/>
+            </i>
+            <i ref="_1496505451654" x="241" y="219">
+                <el/>
+            </i>
+        </jpa:ws>
+    </jpa:wsl>
+</jpa:entity-mappings>

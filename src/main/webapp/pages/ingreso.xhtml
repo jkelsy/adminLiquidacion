@@ -1,0 +1,109 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:o="http://omnifaces.org/ui">
+    <ui:composition template="/templates/layout.xhtml">
+        <ui:define name="header">
+            <h:outputStylesheet library="bootstrap" name="css/bootstrap.min.css"/>
+            <h:outputStylesheet library="css" name="sb-admin-2.css"/>
+            <h:outputStylesheet library="css" name="agenda.css"/>
+        </ui:define>
+        <ui:define name="content">
+            <f:metadata>                
+                <f:viewAction action="#{ingreso.iniciar()}"  />
+            </f:metadata>
+            <h:form>
+                <div class="row">                
+                    <div class="col-lg-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <div class="panel-title">
+                                    Configuración del Ingreso del Estudiante                                
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-lg-12">
+
+                                        <p:panel header="Editar" widgetVar="panelEditar">
+                                            <p:panelGrid columns="4" style="width: 100%;" styleClass="ui-noborder">
+                                                <h:outputText value="Año"/>
+                                                <h:outputText value="Desde"/>
+                                                <h:outputText value="Hasta"/>
+                                                <h:outputText value="Valor SMLV"/>
+
+                                                <p:inputNumber value="#{ingreso.ingresoInstance.anyo}" title="Año" decimalPlaces="0" decimalSeparator="," thousandSeparator=""/>
+                                                <p:inputNumber value="#{ingreso.ingresoInstance.desde}" title="Desde" decimalPlaces="0" decimalSeparator="," thousandSeparator=""/>
+                                                <p:inputNumber value="#{ingreso.ingresoInstance.hasta}" title="Hasta" decimalPlaces="0" decimalSeparator="," thousandSeparator=""/>
+                                                <p:inputNumber value="#{ingreso.ingresoInstance.valorSMLV}" title="Valor SMLV" decimalPlaces="2" decimalSeparator="," thousandSeparator=""/>
+                                                <p:panelGrid>
+                                                    <p:commandButton actionListener="#{ingreso.guardar()}" value="Guardar" update="tableIngreso @widgetVar(panelEditar)"/>
+                                                    <p:commandButton actionListener="#{ingreso.cancelar()}" value="Cancelar" update="@widgetVar(panelEditar)"/>
+                                                    <p:commandButton actionListener="#{ingreso.eliminar()}" value="Eliminar" update="tableIngreso @widgetVar(panelEditar)"/>
+                                                </p:panelGrid>    
+
+                                            </p:panelGrid>                                        
+                                        </p:panel>
+
+                                    </div>
+                                </div>                                
+                                <div class="row">
+                                    <div class="col-lg-12">
+
+                                        <p:dataTable value="#{ingreso.ingresoList}" 
+                                                     var="item"                                                      
+                                                     selection="#{ingreso.ingresoSelected}"
+                                                     rowKey="#{item.id}"
+                                                     selectionMode="single"                                                                                                          
+                                                     id="tableIngreso"
+                                                     widgetVar="tableIngreso">
+                                            <p:ajax event="rowSelect" listener="#{ingreso.onRowSelect(event)}" update="@widgetVar(panelEditar)"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Listado de Ingresos"/>
+                                            </f:facet>
+                                            <p:columnGroup type="header">
+                                                <p:row>
+                                                    <p:column rowspan="2" headerText="ID" />
+                                                    <p:column rowspan="2" headerText="Año" />
+                                                    <p:column colspan="2" headerText="Rango (SMLV)" />
+                                                    <p:column rowspan="2" headerText="Valor (SMLV)" />
+                                                    <p:column rowspan="2" headerText="Equivalencia" />
+                                                </p:row>
+                                                <p:row>
+                                                    <p:column headerText="Desde" />
+                                                    <p:column headerText="Hasta" />                                                   
+                                                </p:row>
+                                            </p:columnGroup>
+                                            <p:column headerText="ID">
+                                                <h:outputText value="#{item.id}"/>
+                                            </p:column>
+                                            <p:column headerText="Año" filterBy="#{item.anyo}" filterMatchMode="exact">                                                
+                                                <h:outputText value="#{item.anyo}"/>                                                                                          
+                                            </p:column>
+                                            <p:column headerText="Desde">                                                
+                                                <h:outputText value="#{item.desde}"/>                                                                                                
+                                            </p:column>
+                                            <p:column headerText="Hasta">                                                
+                                                <h:outputText value="#{item.hasta}"/>                                                                                                
+                                            </p:column>
+                                            <p:column headerText="ValorSMLV">                                                
+                                                <h:outputText value="#{item.valorSMLV}"/>
+                                            </p:column> 
+                                            <p:column>                                                
+                                                <h:outputText value="equivalencia"/>
+                                            </p:column> 
+                                        </p:dataTable>
+
+                                    </div>                                    
+                                </div>
+                            </div>
+                        </div>      
+                    </div>
+                </div>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

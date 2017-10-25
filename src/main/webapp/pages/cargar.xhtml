@@ -1,0 +1,122 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <ui:composition template="/templates/layout.xhtml">
+        <ui:define name="header">
+            <h:outputStylesheet library="bootstrap" name="css/bootstrap.min.css"/>
+            <h:outputStylesheet library="css" name="sb-admin-2.css"/>
+            <h:outputStylesheet library="css" name="agenda.css"/>
+        </ui:define>
+        <ui:define name="content">
+            <f:metadata>                
+                <f:viewAction action="#{cargar.iniciar()}"  />
+            </f:metadata>
+            <h:form id="form_cargar">
+                <div class="row">                
+                    <div class="col-lg-12">
+
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <div class="panel-title">
+                                    Cargar Estudiantes                                
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <label for="datasource">Consulta</label>
+                                        <p:selectOneMenu id="datasource" widgetVar="consulta" value="#{cargar.consulta}">
+                                            <f:selectItem noSelectionOption="true" itemLabel="" />
+                                            <f:selectItems value="#{cargar.consultaList}"
+                                                           var="item"
+                                                           itemLabel="#{item.nombre}"
+                                                           itemValue="#{item}"/>
+                                            <o:converter converterId="omnifaces.SelectItemsConverter" list="#{consulta.consultaList}" />
+                                        </p:selectOneMenu>  
+                                    </div>                                    
+                                </div> 
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <label for="periodo">Año</label>                                        
+                                        <p:selectOneMenu>
+                                            <f:selectItem noSelectionOption="true" itemLabel="" /> 
+                                            <f:selectItems value="#{cargar.anyoList}"/>
+                                        </p:selectOneMenu>                                        
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <label for="periodo">Periodo</label>                                        
+                                        <p:selectOneMenu>
+                                            <f:selectItem noSelectionOption="true" itemLabel="" /> 
+                                            <f:selectItem itemLabel="SEM1" itemValue="SEM1" />
+                                            <f:selectItem itemLabel="SEM2" itemValue="SEM2" />
+                                        </p:selectOneMenu>                                        
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <p:commandButton action="#{cargar.cargar()}" value="cargar" update="@widgetVar(table_estudiantes)" class="form-control"/>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>      
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <div class="panel-title">
+                                    Estudiantes a procesar                                
+                                </div>
+                            </div>
+                            <div class="panel-body">                            
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <p:dataTable id="table_estudiantes" widgetVar="table_estudiantes" value="#{cargar.listadoEstudiantes}" var="item">
+                                            <p:column headerText="Apellidos">
+                                                <h:outputText value="#{item.apellidos}"/>
+                                            </p:column>
+                                            <p:column headerText="Nombres">
+                                                <h:outputText value="#{item.nombres}"/>                                                
+                                            </p:column>
+                                            <p:column headerText="PEOPLE_CODE_ID">
+                                                <h:outputText value="#{item.PEOPLE_CODE_ID}" />
+                                            </p:column>
+                                            
+                                            <p:column headerText="Programa">
+                                                <h:outputText value="#{item.Programa}" />
+                                            </p:column>
+                                            
+                                            <p:column headerText="SOPORTES">
+                                                <ui:repeat value="#{cargar.soportes(item.PEOPLE_CODE_ID)}" var="i">
+                                                    #{i.nombre} 
+                                                </ui:repeat>
+                                            </p:column>
+                                            <p:column headerText="Seleccionar">                                                
+                                                <p:selectBooleanCheckbox value="#{item.liquidar}" label="seleccionar"/>                                                
+                                            </p:column>
+                                        </p:dataTable>    
+                                        <h:commandLink>                                           
+                                            <p:dataExporter type="xls" target="table_estudiantes" fileName="estudiantes" pageOnly="true"/>
+                                            exportar
+                                        </h:commandLink>
+                                    </div>
+                                </div>   
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <p:commandButton value="Liquidar" actionListener="#{cargar.liquidar()}" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

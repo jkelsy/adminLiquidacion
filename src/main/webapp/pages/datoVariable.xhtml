@@ -1,0 +1,88 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:o="http://omnifaces.org/ui">
+    <ui:composition template="/templates/layout.xhtml">
+        <ui:define name="header">
+            <h:outputStylesheet library="bootstrap" name="css/bootstrap.min.css"/>
+            <h:outputStylesheet library="css" name="sb-admin-2.css"/>
+            <h:outputStylesheet library="css" name="agenda.css"/>
+        </ui:define>
+        <ui:define name="content">
+            <f:metadata>                
+                <f:viewAction action="#{datoVariable.iniciar()}"  />
+            </f:metadata>
+            <h:form>
+                <div class="row">                
+                    <div class="col-lg-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <div class="panel-title">
+                                    Configuración de las variables                                
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        
+                                        <p:panel header="Editar" widgetVar="panelEditar">
+                                            <p:panelGrid columns="3" style="width: 100%;" styleClass="ui-noborder">
+                                                <h:outputText value="Año"/>
+                                                <h:outputText value="Nombre"/>
+                                                <h:outputText value="Valor"/>
+
+                                                <p:inputNumber value="#{datoVariable.datoVariableInstance.anyo}" title="Año" decimalPlaces="0" decimalSeparator="," thousandSeparator=""/>
+                                                <p:inputText value="#{datoVariable.datoVariableInstance.nombre}" title="Nombre" />
+                                                <p:inputNumber value="#{datoVariable.datoVariableInstance.valor}" title="Valor" decimalPlaces="2" decimalSeparator="," thousandSeparator=""/>
+                                                <p:panelGrid>
+                                                    <p:commandButton actionListener="#{datoVariable.guardar()}" value="Guardar" update="tableDatoVariable @widgetVar(panelEditar)"/>
+                                                    <p:commandButton actionListener="#{datoVariable.cancelar()}" value="Cancelar" update="@widgetVar(panelEditar)"/>
+                                                    <p:commandButton actionListener="#{datoVariable.eliminar()}" value="Eliminar" update="tableDatoVariable @widgetVar(panelEditar)"/>
+                                                </p:panelGrid>    
+                                                
+                                            </p:panelGrid>                                        
+                                        </p:panel>
+                                        
+                                    </div>
+                                </div>                                
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        
+                                        <p:dataTable value="#{datoVariable.datoVariableList}" 
+                                                     var="item"                                                      
+                                                     selection="#{datoVariable.datoVariableSelected}"
+                                                     rowKey="#{item.id}"
+                                                     selectionMode="single"                                                                                                          
+                                                     id="tableDatoVariable"
+                                                     widgetVar="tableDatoVariable">
+                                            <p:ajax event="rowSelect" listener="#{datoVariable.onRowSelect(event)}" update="@widgetVar(panelEditar)"/>
+                                            <f:facet name="header">
+                                                <h:outputText value="Listado de Variables"/>
+                                            </f:facet>
+                                            <p:column headerText="ID">
+                                                <h:outputText value="#{item.id}"/>
+                                            </p:column>
+                                            <p:column headerText="Año" filterBy="#{item.anyo}" filterMatchMode="exact">                                                
+                                                <h:outputText value="#{item.anyo}"/>                                                                                          
+                                            </p:column>
+                                            <p:column headerText="DatoVariable">                                                
+                                                <h:outputText value="#{item.nombre}"/>                                                                                                
+                                            </p:column>
+                                            <p:column headerText="ValorSMLV">                                                
+                                                <h:outputText value="#{item.valor}"/>
+                                            </p:column>                                            
+                                        </p:dataTable>
+                                        
+                                    </div>                                    
+                                </div>
+                            </div>
+                        </div>      
+                    </div>
+                </div>
+                
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>
