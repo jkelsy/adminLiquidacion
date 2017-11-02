@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -17,65 +19,54 @@ public class Liquidacion implements Serializable {
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
 
-    @Basic private String PEOPLE_CODE_ID;
-
-    @Basic private String Nombres;
-    
-    @Basic private String Apellidos;
-
+    @Basic private String PEOPLE_CODE_ID;    
+    @Basic private String codigoPrograma;  
     @Basic private int estrato;
-
     @Basic private int patrimonio;
+    @Basic private int ingreso;    
+    @Basic private int ultimoPago;    
+    @Basic private int ultimoAnyoPago;    
+    @Basic private int anyoLiquidacion;    
+    @Basic private double valorMatricula;    
+    @Temporal(TemporalType.TIMESTAMP) private Date fecha;    
+    @Basic private String usuario;
+    
+    @ManyToOne(targetEntity = EncabezadoLiquidacion.class)
+    @JoinColumn(name="ENCABEZADO_ID")
+    private EncabezadoLiquidacion encabezadoLiquidacion;
 
-    @Basic private int ingreso;
-    
-    @Basic private int ultimoPago; //pago mensual último anyo secundaria
-    
-    @Basic private int ultimoAnyoPago; //último año secundaria    
-    
-    @Basic private int anyoLiquidacion; //último año secundaria
-    
-    @Temporal(TemporalType.TIMESTAMP) private Date fechaActualizacion;
-    
-    @Basic private String actualizadoPor;
-    
-    @Temporal(TemporalType.TIMESTAMP) private Date fechaLiquidacion;
-    
-    @Basic private String liquidadoPor;
-
-    public Date getFechaLiquidacion() {
-        return fechaLiquidacion;
+    public String getCodigoPrograma() {
+        return codigoPrograma;
     }
 
-    public void setFechaLiquidacion(Date fechaLiquidacion) {
-        this.fechaLiquidacion = fechaLiquidacion;
+    public void setCodigoPrograma(String codigoPrograma) {
+        this.codigoPrograma = codigoPrograma;
     }
 
-    public String getLiquidadoPor() {
-        return liquidadoPor;
+    public double getValorMatricula() {
+        return valorMatricula;
     }
 
-    public void setLiquidadoPor(String liquidadoPor) {
-        this.liquidadoPor = liquidadoPor;
+    public void setValorMatricula(double valorMatricula) {
+        this.valorMatricula = valorMatricula;
+    }
+
+    public Date getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
+
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
     }
     
-
-    public Date getFechaActualizacion() {
-        return fechaActualizacion;
-    }
-
-    public void setFechaActualizacion(Date fechaActulizacion) {
-        this.fechaActualizacion = fechaActulizacion;
-    }
-
-    public String getActualizadoPor() {
-        return actualizadoPor;
-    }
-
-    public void setActualizadoPor(String actualizadoPor) {
-        this.actualizadoPor = actualizadoPor;
-    }
-
     public int getUltimoPago() {
         return ultimoPago;
     }
@@ -115,24 +106,7 @@ public class Liquidacion implements Serializable {
     public void setPEOPLE_CODE_ID(String PEOPLE_CODE_ID) {
         this.PEOPLE_CODE_ID = PEOPLE_CODE_ID;
     }
-
-    public String getNombres() {
-        return Nombres;
-    }
-
-    public void setNombres(String Nombres) {
-        this.Nombres = Nombres;
-    }
-
-    public String getApellidos() {
-        return Apellidos;
-    }
-
-    public void setApellidos(String Apellidos) {
-        this.Apellidos = Apellidos;
-    }
-
-
+    
     public int getEstrato() {
         return this.estrato;
     }
@@ -140,7 +114,6 @@ public class Liquidacion implements Serializable {
     public void setEstrato(int estrato) {
         this.estrato = estrato;
     }
-
 
     public int getPatrimonio() {
         return this.patrimonio;
@@ -150,13 +123,20 @@ public class Liquidacion implements Serializable {
         this.patrimonio = patrimonio;
     }
 
-
     public int getIngreso() {
         return this.ingreso;
     }
 
     public void setIngreso(int ingreso) {
         this.ingreso = ingreso;
+    }
+
+    public EncabezadoLiquidacion getEncabezadoLiquidacion() {
+        return encabezadoLiquidacion;
+    }
+
+    public void setEncabezadoLiquidacion(EncabezadoLiquidacion encabezadoLiquidacion) {
+        this.encabezadoLiquidacion = encabezadoLiquidacion;
     }
     
 }

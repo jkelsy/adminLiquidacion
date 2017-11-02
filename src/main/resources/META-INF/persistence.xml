@@ -9,6 +9,7 @@
     <class>db.Usuario</class>
     <class>db.Estrato</class>
     <class>db.Ingreso</class>
+    <class>db.DatoVariable</class>
     <class>db.Rol</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>

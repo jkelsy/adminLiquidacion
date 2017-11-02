@@ -6,19 +6,20 @@
 package db;
 
 import java.io.Serializable;
-import java.util.Objects;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  *
  * @author jk
  */
 @Entity
-public class DatoVariable implements Serializable {
+@Table(name="configuracion")
+public class Configuracion implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -29,12 +30,8 @@ public class DatoVariable implements Serializable {
     private int anyo;
     
     @Basic
-    private String nombre;   
+    private String semestre;   
     
-    @Basic
-    private Double valor;
-    
-
     public Long getId() {
         return id;
     }
@@ -51,45 +48,37 @@ public class DatoVariable implements Serializable {
         this.anyo = anyo;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getSemestre() {
+        return semestre;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public Double getValor() {
-        return valor;
-    }
-
-    public void setValor(Double valor) {
-        this.valor = valor;
+    public void setSemestre(String semestre) {
+        this.semestre = semestre;
     }
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 23 * hash + Objects.hashCode(this.id);
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Configuracion)) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final DatoVariable other = (DatoVariable) obj;
-        if (!Objects.equals(this.id, other.id)) {
+        Configuracion other = (Configuracion) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "db.Configuracion[ id=" + id + " ]";
+    }
+    
 }

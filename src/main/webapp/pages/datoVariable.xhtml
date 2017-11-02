@@ -24,9 +24,28 @@
                                 </div>
                             </div>
                             <div class="panel-body">
+                                <p:panel header="Configuración Liquidación Actual">
+                                    <div class="row">
+                                        <div class="col-lg-2">
+                                            <label>Año:</label> 
+                                            <p:inputNumber value="#{datoVariable.configuracion.anyo}"/>
+                                        </div>
+                                        <div class="col-lg-2">                                        
+                                            <label>Semestre:</label>                                        
+                                            <p:selectOneMenu value="#{datoVariable.configuracion.semestre}">
+                                                <f:selectItem noSelectionOption="true" itemLabel="" /> 
+                                                <f:selectItem itemLabel="SEM1" itemValue="SEM1" />
+                                                <f:selectItem itemLabel="SEM2" itemValue="SEM2" />
+                                            </p:selectOneMenu>
+                                        </div>
+                                        <div class="col-lg-1">
+                                            <label>...</label>
+                                            <p:commandButton actionListener="#{datoVariable.guardarConfiguracion()}" value="Guardar"/>
+                                        </div>
+                                    </div>
+                                </p:panel>
                                 <div class="row">
-                                    <div class="col-lg-12">
-                                        
+                                    <div class="col-lg-12">                                        
                                         <p:panel header="Editar" widgetVar="panelEditar">
                                             <p:panelGrid columns="3" style="width: 100%;" styleClass="ui-noborder">
                                                 <h:outputText value="Año"/>
@@ -41,15 +60,15 @@
                                                     <p:commandButton actionListener="#{datoVariable.cancelar()}" value="Cancelar" update="@widgetVar(panelEditar)"/>
                                                     <p:commandButton actionListener="#{datoVariable.eliminar()}" value="Eliminar" update="tableDatoVariable @widgetVar(panelEditar)"/>
                                                 </p:panelGrid>    
-                                                
+
                                             </p:panelGrid>                                        
                                         </p:panel>
-                                        
+
                                     </div>
                                 </div>                                
                                 <div class="row">
                                     <div class="col-lg-12">
-                                        
+
                                         <p:dataTable value="#{datoVariable.datoVariableList}" 
                                                      var="item"                                                      
                                                      selection="#{datoVariable.datoVariableSelected}"
@@ -74,14 +93,14 @@
                                                 <h:outputText value="#{item.valor}"/>
                                             </p:column>                                            
                                         </p:dataTable>
-                                        
+
                                     </div>                                    
                                 </div>
                             </div>
                         </div>      
                     </div>
                 </div>
-                
+
             </h:form>
         </ui:define>
     </ui:composition>

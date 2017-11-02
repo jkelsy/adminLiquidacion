@@ -41,15 +41,15 @@
                                 </div> 
                                 <div class="row">
                                     <div class="col-lg-6">
-                                        <label for="periodo">Año</label>                                        
-                                        <p:selectOneMenu>
+                                        <label>Año</label>                                        
+                                        <p:selectOneMenu value="#{cargar.anyoLiquidacion}">
                                             <f:selectItem noSelectionOption="true" itemLabel="" /> 
                                             <f:selectItems value="#{cargar.anyoList}"/>
                                         </p:selectOneMenu>                                        
                                     </div>
                                     <div class="col-lg-6">
-                                        <label for="periodo">Periodo</label>                                        
-                                        <p:selectOneMenu>
+                                        <label>Semestre</label>                                        
+                                        <p:selectOneMenu value="#{cargar.semestre}">
                                             <f:selectItem noSelectionOption="true" itemLabel="" /> 
                                             <f:selectItem itemLabel="SEM1" itemValue="SEM1" />
                                             <f:selectItem itemLabel="SEM2" itemValue="SEM2" />
@@ -88,16 +88,32 @@
                                                 <h:outputText value="#{item.PEOPLE_CODE_ID}" />
                                             </p:column>
                                             
-                                            <p:column headerText="Programa">
-                                                <h:outputText value="#{item.Programa}" />
+                                            <p:column headerText="Codigo Programa">
+                                                <h:outputText value="#{item.codigoPrograma}" />
+                                            </p:column>
+                                            <p:column headerText="Nombre Programa">
+                                                <h:outputText value="#{item.nombrePrograma}" />
+                                            </p:column>
+                                            
+                                            <p:column headerText="Año">
+                                                <h:outputText value="#{item.anyoLiquidacion}" />
+                                            </p:column>
+                                            
+                                            <p:column headerText="Semestre">
+                                                <h:outputText value="#{item.semestre}" />
                                             </p:column>
                                             
                                             <p:column headerText="SOPORTES">
-                                                <ui:repeat value="#{cargar.soportes(item.PEOPLE_CODE_ID)}" var="i">
+                                                <ui:repeat value="#{cargar.soportes(item.PEOPLE_CODE_ID, item.anyoLiquidacion, item.semestre)}" var="i">
                                                     #{i.nombre} 
                                                 </ui:repeat>
                                             </p:column>
-                                            <p:column headerText="Seleccionar">                                                
+                                            <p:column>
+                                                <f:facet name="header">
+                                                    Seleccionar
+                                                    <p:commandButton action="#{cargar.seleccionarTodos}" 
+                                                                     update="form_cargar" value="Seleccionar Todos"/>
+                                                </f:facet>
                                                 <p:selectBooleanCheckbox value="#{item.liquidar}" label="seleccionar"/>                                                
                                             </p:column>
                                         </p:dataTable>    

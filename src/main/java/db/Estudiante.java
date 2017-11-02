@@ -46,6 +46,8 @@ public class Estudiante implements Serializable {
     @Basic private String Nombres;
     
     @Basic private String Apellidos;
+    
+    @Basic private String nacionalidad;
 
     @Basic private int estrato;
 
@@ -62,6 +64,16 @@ public class Estudiante implements Serializable {
     @Basic private String actualizadoPor;
     
     @Basic private Boolean liquidar;
+    
+    @Basic private Boolean liquidado;
+
+    public Boolean getLiquidado() {
+        return liquidado;
+    }
+
+    public void setLiquidado(Boolean liquidado) {
+        this.liquidado = liquidado;
+    }
 
     public String getSemestre() {
         return semestre;
@@ -192,15 +204,31 @@ public class Estudiante implements Serializable {
     public void setIngreso(int ingreso) {
         this.ingreso = ingreso;
     }
+
+    public String getNacionalidad() {
+        return nacionalidad;
+    }
+
+    public void setNacionalidad(String nacionalidad) {
+        this.nacionalidad = nacionalidad;
+    }
     
     public double promedioIPC(){
         DatoVariable datoVariable;
         double temporal = 0;
         int contador = 0;
-        for (int i = ultimoAnyoPago; i<anyoLiquidacion; i++){
+        
+        for (int i = this.ultimoAnyoPago; i<this.anyoLiquidacion; i++){
             datoVariable = datoVariableRepository.findOptionalByAnyoAndNombre(i, Constantes.IPC);
-            temporal += datoVariable.getValor();
-            contador++;
+            if(datoVariable == null){
+                System.err.println("Mierda");
+            }else{
+                //temporal += datoVariable.getValor();
+                
+                System.err.println(datoVariable);
+                contador++;
+            }
+            
         }
         
         if(contador > 0){
@@ -219,7 +247,10 @@ public class Estudiante implements Serializable {
     }
     
     public double liquidacionSecundaria(){
-        return (4*ultimoPago*(Math.pow(1+promedioIPC(), diferenciaAnyos())));
+        double promedio = promedioIPC();
+        int diferencia = diferenciaAnyos();
+        double temporal = 4*ultimoPago*(Math.pow(1+promedio, diferencia));
+        return temporal;
     }
     
     public double liquidacionEstrato(){

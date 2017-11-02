@@ -5,7 +5,9 @@
  */
 package controllers;
 
+import db.Configuracion;
 import db.DatoVariable;
+import fachade.ConfiguracionRepository;
 import fachade.DatoVariableRepository;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,13 +26,15 @@ import org.primefaces.event.SelectEvent;
 @ViewScoped
 public class DatoVariableController implements Serializable {   
     
-    @Inject
-    private DatoVariableRepository datoVariableRepository;
+    @Inject private DatoVariableRepository datoVariableRepository;
+    @Inject private ConfiguracionRepository configuracionRepository;
     
     private DatoVariable datoVariableInstance;
     private DatoVariable datoVariableSelected;
     private List<DatoVariable> datoVariableList;
     private List<DatoVariable> filteredDatoVariableList;
+    
+    private Configuracion configuracion;
 
     public DatoVariable getDatoVariableSelected() {
         return datoVariableSelected;
@@ -68,11 +72,16 @@ public class DatoVariableController implements Serializable {
         this.datoVariableList = datoVariableRepository.findAllOrderByAnyoDesc();    
         this.filteredDatoVariableList = datoVariableList;
         this.datoVariableInstance = new DatoVariable();
+        this.configuracion = configuracionRepository.findBy(1L);
     }
     
     public void guardar(){
         datoVariableRepository.saveAndFlush(datoVariableInstance);        
         this.iniciar();
+    }
+    
+    public void guardarConfiguracion(){
+        this.configuracion = configuracionRepository.saveAndFlush(configuracion);
     }
     
     public void cancelar(){                
@@ -85,8 +94,15 @@ public class DatoVariableController implements Serializable {
     }
     
     public void onRowSelect(SelectEvent event) {
-        datoVariableInstance = datoVariableSelected;
-        
+        datoVariableInstance = datoVariableSelected;        
+    }
+
+    public Configuracion getConfiguracion() {
+        return configuracion;
+    }
+
+    public void setConfiguracion(Configuracion configuracion) {
+        this.configuracion = configuracion;
     }
     
 }

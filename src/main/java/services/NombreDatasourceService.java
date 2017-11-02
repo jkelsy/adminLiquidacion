@@ -9,6 +9,7 @@ import configuracion.Constantes;
 import configuracion.Inicio;
 import db.Estudiante;
 import db.NombreDatasource;
+import fachade.EstudianteRepository;
 import fachade.NombreDatasourceRepository;
 import java.io.Serializable;
 import java.sql.Connection;
@@ -31,86 +32,103 @@ import javax.sql.DataSource;
  *
  * @author jk
  */
-
 @Named(value = "ndsService")
-public class NombreDatasourceService implements Serializable{
-    
+public class NombreDatasourceService implements Serializable {
+
     @Inject
     private NombreDatasourceRepository nombreDatasourceRepository;
-    
-    public List<NombreDatasource> getDatasources(){
+    @Inject
+    private EstudianteRepository estudianteRepository;
+
+    public List<NombreDatasource> getDatasources() {
         return nombreDatasourceRepository.findAll();
     }
-    
-    public List<Estudiante> cargarEstudiantes(String datasource, String sql){
-        
+
+    public List<Estudiante> cargarEstudiantes(String datasource, String sql) {
+
         Estudiante e;
+        Estudiante actualizado; //estudiante que entró al formulario de actualizacion y actualizó sus datos
         List<Estudiante> estudianteList = new ArrayList();
         try {
             Context ctx = new InitialContext();
-            Context envCtx = (Context) ctx.lookup("java:jboss/datasources");            
+            Context envCtx = (Context) ctx.lookup("java:jboss/datasources");
             DataSource ds = (DataSource) envCtx.lookup(datasource);
-            
+
             try {
                 Connection con = ds.getConnection();
                 ResultSet rs = con.createStatement().executeQuery(sql);
-                
+
                 List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
                 ResultSetMetaData metaData = rs.getMetaData();
                 int columnCount = metaData.getColumnCount();
 
-                while(rs.next()){
+                while (rs.next()) {
                     e = new Estudiante();
                     e.setPEOPLE_CODE_ID(rs.getString(Constantes.PEOPLE_CODE_ID));
+
                     e.setApellidos(rs.getString(Constantes.NOMBRES));
-                    e.setNombres(rs.getString(Constantes.APELLIDOS));   
-                    
+                    e.setNombres(rs.getString(Constantes.APELLIDOS));
+
                     e.setCodigoPrograma(rs.getString(Constantes.CODIGO_PROGRAMA));
                     e.setNombrePrograma(rs.getString(Constantes.NOMBRE_PROGRAMA));
+
                     e.setAnyoLiquidacion(rs.getInt(Constantes.ANYO));
                     e.setSemestre(rs.getString(Constantes.SEMESTRE));
+
                     
-                    estudianteList.add(e);                    
-                } 
-                
+                    actualizado = estudianteRepository.findByPEOPLE_CODE_IDAndAnyoAndSemestre(
+                                e.getPEOPLE_CODE_ID(),
+                                e.getAnyoLiquidacion(),
+                                e.getSemestre());
+
+                    if(actualizado != null){
+                        e.setId(actualizado.getId());
+                        e.setNacionalidad(actualizado.getNacionalidad());
+                        e.setEstrato(actualizado.getEstrato());
+                        e.setUltimoAnyoPago(actualizado.getUltimoAnyoPago());
+                        e.setUltimoPago(actualizado.getUltimoPago());
+                        e.setPatrimonio(actualizado.getPatrimonio());
+                        e.setIngreso(actualizado.getIngreso());
+                    }
+
+                    estudianteList.add(e);
+                }
+
                 rs.close();
-                con.close();                
+                con.close();
                 return estudianteList;
-                
+
             } catch (SQLException ex) {
                 Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
                 return null;
             }
-        } catch (NamingException ex) {            
+        } catch (NamingException ex) {
             Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
-    
+
     public void getDataSources2() {
-        
+
         try {
             Context ctx = new InitialContext();
-            Context envCtx = (Context) ctx.lookup("java:jboss/datasources");            
+            Context envCtx = (Context) ctx.lookup("java:jboss/datasources");
             DataSource ds = (DataSource) envCtx.lookup("AgendaDS");
-            
+
             try {
-                Connection con = ds.getConnection();                
-                System.err.println(con.toString());    
-                
+                Connection con = ds.getConnection();
+                System.err.println(con.toString());
+
                 ResultSet rs = con.createStatement().executeQuery("select * from tarea;");
-                
-                while(rs.next()){
+
+                while (rs.next()) {
                     System.out.println(rs.getString("tar_descripcion"));
                 }
-                
-                
+
             } catch (SQLException ex) {
                 Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
-            
-            
+
         } catch (NamingException ex) {
             System.err.println("chanfle");
             System.err.println(ex.getMessage());
@@ -118,5 +136,5 @@ public class NombreDatasourceService implements Serializable{
         }
 
     }
-    
+
 }

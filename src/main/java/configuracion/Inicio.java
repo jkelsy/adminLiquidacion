@@ -1,5 +1,6 @@
 package configuracion;
 
+import db.Configuracion;
 import db.DatoVariable;
 import db.Estrato;
 import db.Ingreso;
@@ -8,6 +9,7 @@ import db.Patrimonio;
 import db.Permiso;
 import db.Rol;
 import db.Usuario;
+import fachade.ConfiguracionRepository;
 import fachade.DatoVariableRepository;
 import fachade.EstratoRepository;
 import fachade.IngresoRepository;
@@ -50,6 +52,9 @@ public class Inicio {
     
     @Inject
     private DatoVariableRepository datoVariableRepository;
+    
+    @Inject
+    private ConfiguracionRepository configuracionRepository;
 
     private void iniciarSeguridad() {
 
@@ -198,6 +203,18 @@ public class Inicio {
             anyo++;            
         }
     }
+    
+    public void iniciarConfiguracion(){
+        Configuracion configuracion = configuracionRepository.findBy(1L);
+        
+        if(configuracion == null){
+            configuracion = new Configuracion();
+            configuracion.setAnyo(2018);
+            configuracion.setSemestre("SEM1");
+            configuracionRepository.save(configuracion);
+        }
+                
+    }
 
     @PostConstruct
     public void iniciar() { 
@@ -206,6 +223,7 @@ public class Inicio {
         iniciarPatrimonios();
         iniciarEstratos();
         iniciarDatasources();
-        iniciarSeguridad();       
+        iniciarSeguridad();   
+        iniciarConfiguracion();
     }
 }
