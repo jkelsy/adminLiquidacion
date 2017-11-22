@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -152,7 +153,7 @@ public class CargarController implements Serializable {
         return archivoRepository.findAllByPEOPLE_CODE_IDAndAnyoAndSemestre(PEOPLE_CODE_ID, anyo, semestre);
     }
 
-    public void liquidar() {
+    public String liquidar() {
         EncabezadoLiquidacion encabezadoLiquidacion = new EncabezadoLiquidacion();
         encabezadoLiquidacion.setFechaLiquidacion(new Date());
         encabezadoLiquidacion.setAnyoLiquidacion(anyoLiquidacion);
@@ -161,165 +162,186 @@ public class CargarController implements Serializable {
         encabezadoLiquidacion = elr.saveAndFlush(encabezadoLiquidacion);
 
         Liquidacion liquidacion;
+        DatoVariable datoVariable = null;
+        double smlv = 1;
+        datoVariable = datoVariableRepository.findOptionalByAnyoAndNombre(anyoLiquidacion, "SMLV");
+        if (datoVariable != null) {
+            smlv = datoVariable.getValor();
+        }
 
         for (Estudiante estudiante : listadoEstudiantes) {
 
             if (estudiante.getLiquidar()) {
-                if (estudiante.getId() != null) {
-                    try {
-                        liquidacion = new Liquidacion();
-                        liquidacion.setFecha(encabezadoLiquidacion.getFechaLiquidacion());
-                        liquidacion.setEncabezadoLiquidacion(encabezadoLiquidacion);
-                        liquidacion.setPEOPLE_CODE_ID(estudiante.getPEOPLE_CODE_ID());
-                        liquidacion.setAnyoLiquidacion(anyoLiquidacion);
 
-                        liquidacion.setCodigoPrograma(estudiante.getCodigoPrograma());
-                        liquidacion.setEstrato(estudiante.getEstrato());
-                        liquidacion.setUsuario(encabezadoLiquidacion.getLiquidadoPor());
-                        liquidacion.setPatrimonio(estudiante.getPatrimonio());
-                        liquidacion.setIngreso(estudiante.getIngreso());
-                        liquidacion.setUltimoAnyoPago(estudiante.getUltimoAnyoPago());
-                        liquidacion.setUltimoPago(estudiante.getUltimoPago());
+                try {
+                    liquidacion = new Liquidacion();
+                    liquidacion.setFecha(encabezadoLiquidacion.getFechaLiquidacion());
+                    liquidacion.setEncabezadoLiquidacion(encabezadoLiquidacion);
+                    liquidacion.setPEOPLE_CODE_ID(estudiante.getPEOPLE_CODE_ID());
+                    liquidacion.setAnyoLiquidacion(anyoLiquidacion);
+                    liquidacion.setSemestre(semestre);
+                    liquidacion.setApellidos(estudiante.getApellidos());
+                    liquidacion.setNombres(estudiante.getNombres());
+                    liquidacion.setNombrePrograma(estudiante.getNombrePrograma());
+                    liquidacion.setCodigoPrograma(estudiante.getCodigoPrograma());
+                    liquidacion.setUsuario(encabezadoLiquidacion.getLiquidadoPor());
 
-                        //Inicio proceso liquidación
-                        //Diferencia Años:
-                        int diferenciaAnyos = 0;
-                        if ((anyoLiquidacion - estudiante.getUltimoAnyoPago()) <= 10) {
-                            diferenciaAnyos = anyoLiquidacion - estudiante.getUltimoAnyoPago();
+                    if (estudiante.getId() != null) {
+
+                        if ("Extrangero".equals(estudiante.getNacionalidad())) {
+                            liquidacion.setNacionalidad("Extrangero");
+                            liquidacion.setValorMatricula(smlv*6);
                         } else {
-                            diferenciaAnyos = 10;
-                        }
+                            
+                            //validar los soportes...
+                            liquidacion.setNacionalidad("Colombiano");
+                            liquidacion.setEstrato(estudiante.getEstrato());
+                            liquidacion.setPatrimonio(estudiante.getPatrimonio());
+                            liquidacion.setIngreso(estudiante.getIngreso());
+                            liquidacion.setUltimoAnyoPago(estudiante.getUltimoAnyoPago());
+                            liquidacion.setUltimoPago(estudiante.getUltimoPago());
 
-                        //promedio IPC
-                        DatoVariable datoVariable = null;
-                        double promedioIPC = 0;
-                        int contador = 0;
-                        double liquidacionSecundaria = 0;
-                        double liquidacionFinal = 0;
+                            //Inicio proceso liquidación
+                            //Diferencia Años:
+                            int diferenciaAnyos = 0;
+                            if ((anyoLiquidacion - estudiante.getUltimoAnyoPago()) <= 10) {
+                                diferenciaAnyos = anyoLiquidacion - estudiante.getUltimoAnyoPago();
+                            } else {
+                                diferenciaAnyos = 10;
+                            }
 
-                        if (estudiante.getUltimoAnyoPago() == 0) {
-                            //preguntar estudiante de colegio oficial
+                            //promedio IPC
+                            datoVariable = null;
+                            double promedioIPC = 0;
+                            int contador = 0;
+                            double liquidacionSecundaria = 0;
+                            double liquidacionFinal = 0;
 
-                        } else {
-                            for (int i = 0; i < diferenciaAnyos; i++) {
-                                datoVariable = datoVariableRepository.findOptionalByAnyoAndNombre(
-                                        anyoLiquidacion - 1 - i, Constantes.IPC);
+                            if (estudiante.getUltimoAnyoPago() == 0) {
+                                //preguntar estudiante de colegio oficial
 
-                                if (datoVariable == null) {
-                                    System.out.println("NULL Iteracion: " + (anyoLiquidacion - 1 - i));
+                            } else {
+                                for (int i = 0; i < diferenciaAnyos; i++) {
+                                    datoVariable = datoVariableRepository.findOptionalByAnyoAndNombre(
+                                            anyoLiquidacion - 1 - i, Constantes.IPC);
 
-                                } else {
-                                    promedioIPC += datoVariable.getValor();
-                                    System.out.println("Iteracion: " + (anyoLiquidacion - 1 - i));
-                                    System.err.println(datoVariable);
-                                    contador++;
+                                    if (datoVariable == null) {
+                                        System.out.println("NULL Iteracion: " + (anyoLiquidacion - 1 - i));
+
+                                    } else {
+                                        promedioIPC += datoVariable.getValor();
+                                        System.out.println("Iteracion: " + (anyoLiquidacion - 1 - i));
+                                        System.err.println(datoVariable);
+                                        contador++;
+                                    }
                                 }
+
+                                if (contador > 0) {
+                                    promedioIPC = (promedioIPC / contador);
+                                    System.err.println("calculado PromedioIPC: " + promedioIPC);
+                                }
+
+                                liquidacionSecundaria = 4 * estudiante.getUltimoPago() * (Math.pow(1 + promedioIPC, diferenciaAnyos));
+
                             }
 
-                            if (contador > 0) {
-                                promedioIPC = (promedioIPC / contador);
-                                System.err.println("calculado PromedioIPC: " + promedioIPC);
+                            liquidacionFinal = 0.4 * liquidacionSecundaria;
+                            System.err.println("Liquidacion Secundaria: " + liquidacionSecundaria);
+
+                            //liquidacion por estrato
+                            double porcentajeEstrato = 1;
+
+                            datoVariable = datoVariableRepository.findOptionalByAnyoAndNombre(anyoLiquidacion, "SMLV");
+                            if (datoVariable != null) {
+                                smlv = datoVariable.getValor();
                             }
 
-                            liquidacionSecundaria = 4 * estudiante.getUltimoPago() * (Math.pow(1 + promedioIPC, diferenciaAnyos));
+                            Estrato estratoTemporal = estratoRepository.findOptionalByAnyoAndEstrato(anyoLiquidacion, estudiante.getEstrato());
+                            if (estratoTemporal != null) {
+                                porcentajeEstrato = estratoTemporal.getValorSMLV();
+                            }
 
-                        }
+                            double liquidacionEstrato = smlv * porcentajeEstrato;
 
-                        liquidacionFinal = 0.4 * liquidacionSecundaria;
-                        System.err.println("Liquidacion Secundaria: " + liquidacionSecundaria);
+                            System.out.println("Estrato: " + estudiante.getEstrato()
+                                    + " Porcentaje: " + porcentajeEstrato
+                                    + " Total" + liquidacionEstrato);
+                            liquidacionFinal = liquidacionFinal + liquidacionEstrato;
 
-                        //liquidacion por estrato                    
-                        double smlv = 1;
-                        double porcentajeEstrato = 1;
-
-                        datoVariable = datoVariableRepository.findOptionalByAnyoAndNombre(anyoLiquidacion, "SMLV");
-                        if (datoVariable != null) {
-                            smlv = datoVariable.getValor();
-                        }
-
-                        Estrato estratoTemporal = estratoRepository.findOptionalByAnyoAndEstrato(anyoLiquidacion, estudiante.getEstrato());
-                        if (estratoTemporal != null) {
-                            porcentajeEstrato = estratoTemporal.getValorSMLV();
-                        }
-
-                        double liquidacionEstrato = smlv * porcentajeEstrato;
-                        
-                        System.out.println("Estrato: "+estudiante.getEstrato()
-                                + " Porcentaje: "+porcentajeEstrato
-                                + " Total" +liquidacionEstrato);
-                        liquidacionFinal = liquidacionFinal + liquidacionEstrato;
-                        
 //////////////////////////////////////////////////////////////////////////////
-                        //liquidacion por patrimonio
-                        
-                        double porcentajePatrimonio = 1;
-                        
-                        double equivalenciaPatrimonio = estudiante.getPatrimonio() / smlv;
-                        int equivalenciaPatrimonioEntero = (int)Math.ceil(equivalenciaPatrimonio);
-                        
-                        System.out.println("Equivalencia patrimonio: "+equivalenciaPatrimonioEntero);
-                        System.out.println("Año liquidacion: "+anyoLiquidacion);
-                        
+                            //liquidacion por patrimonio
+                            double porcentajePatrimonio = 1;
 
-                        Patrimonio patrimonioTemporal = patrimonioRepository.
-                                findByEquivalenciaAndAnyo(
-                                        equivalenciaPatrimonioEntero, 
-                                        anyoLiquidacion);
-                        
-                        System.err.println("Patrimonio Temporal: "+ patrimonioTemporal);
-                        
-                        if (patrimonioTemporal != null) {
-                            porcentajePatrimonio = patrimonioTemporal.getValorSMLV();
-                        }
+                            double equivalenciaPatrimonio = estudiante.getPatrimonio() / smlv;
+                            int equivalenciaPatrimonioEntero = (int) Math.ceil(equivalenciaPatrimonio);
 
-                        double liquidacionPatrimonio = smlv * porcentajePatrimonio;
-                        
-                        System.out.println("Patrimonio: "+estudiante.getPatrimonio()
-                                + " Porcentaje: "+porcentajePatrimonio
-                                + " Total" +liquidacionPatrimonio);
-                        
-                        liquidacionFinal = liquidacionFinal + liquidacionPatrimonio;
+                            System.out.println("Equivalencia patrimonio: " + equivalenciaPatrimonioEntero);
+                            System.out.println("Año liquidacion: " + anyoLiquidacion);
+
+                            Patrimonio patrimonioTemporal = patrimonioRepository.
+                                    findByEquivalenciaAndAnyo(
+                                            equivalenciaPatrimonioEntero,
+                                            anyoLiquidacion);
+
+                            System.err.println("Patrimonio Temporal: " + patrimonioTemporal);
+
+                            if (patrimonioTemporal != null) {
+                                porcentajePatrimonio = patrimonioTemporal.getValorSMLV();
+                            }
+
+                            double liquidacionPatrimonio = smlv * porcentajePatrimonio;
+
+                            System.out.println("Patrimonio: " + estudiante.getPatrimonio()
+                                    + " Porcentaje: " + porcentajePatrimonio
+                                    + " Total" + liquidacionPatrimonio);
+
+                            liquidacionFinal = liquidacionFinal + liquidacionPatrimonio;
 
 ///////////////////////////////////////////////////////////////////
-                        //liquidacion por ingreso
-                        
-                        double porcentajeIngreso = 1;
-                        double equivalenciaIngreso = estudiante.getIngreso() / smlv;
-                        int equivalenciaIngresoEntero = (int)Math.ceil(equivalenciaIngreso);
-                        
-                        System.out.println("Equivalencia Ingreso: "+equivalenciaIngresoEntero);
+                            //liquidacion por ingreso
+                            double porcentajeIngreso = 1;
+                            double equivalenciaIngreso = estudiante.getIngreso() / smlv;
+                            int equivalenciaIngresoEntero = (int) Math.ceil(equivalenciaIngreso);
 
-                        Ingreso ingresoTemporal = ingresoRepository.
-                                findByEquivalenciaAndAnyo(
-                                        equivalenciaIngresoEntero, 
-                                        anyoLiquidacion);
-                        if (ingresoTemporal != null) {
-                            porcentajeIngreso = ingresoTemporal.getValorSMLV();
+                            System.out.println("Equivalencia Ingreso: " + equivalenciaIngresoEntero);
+
+                            Ingreso ingresoTemporal = ingresoRepository.
+                                    findByEquivalenciaAndAnyo(
+                                            equivalenciaIngresoEntero,
+                                            anyoLiquidacion);
+                            if (ingresoTemporal != null) {
+                                porcentajeIngreso = ingresoTemporal.getValorSMLV();
+                            }
+
+                            double liquidacionIngreso = smlv * porcentajeIngreso;
+
+                            System.out.println("Ingreso: " + estudiante.getIngreso()
+                                    + " Porcentaje: " + porcentajeIngreso
+                                    + " Total" + liquidacionIngreso);
+
+                            liquidacionFinal = liquidacionFinal + liquidacionIngreso;
+
+                            liquidacion.setValorMatricula(liquidacionFinal);
                         }
 
-                        double liquidacionIngreso = smlv * porcentajeIngreso;
-                        
-                        System.out.println("Ingreso: "+estudiante.getIngreso()
-                                + " Porcentaje: "+porcentajeIngreso
-                                + " Total" +liquidacionIngreso);
-                        
-                        liquidacionFinal = liquidacionFinal + liquidacionIngreso;
-
-                        liquidacion.setValorMatricula(liquidacionFinal);
-                        liquidacion = lr.saveAndFlush(liquidacion);
-
+                        liquidacion.setEstado(Constantes.ESTADO_PRE_LIQUIDADO);
                         estudiante.setLiquidado(Boolean.TRUE);
-
                         estudiante = er.saveAndFlush(estudiante);
-                    } catch (JDBCException e) {
-                        System.err.println("Falla al liquidar: " + e.getMessage());
-                    }
-                }else{
-                    //este estudiante no se ha actualizado
-                }
 
+                    } else {
+                        //este estudiante no se ha actualizado
+                        liquidacion.setEstado(Constantes.ESTADO_SIN_ACTUALIZAR);
+
+                    }
+
+                    liquidacion = lr.saveAndFlush(liquidacion);
+
+                } catch (JDBCException e) {
+                    System.err.println("Falla al liquidar: " + e.getMessage());
+                }
             }
         }
+        return "/pages/reporte?faces-redirect=true&amp&id=" + encabezadoLiquidacion.getId();
     }
 
     public void seleccionarTodos() {

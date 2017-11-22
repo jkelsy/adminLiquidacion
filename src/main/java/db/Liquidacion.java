@@ -20,20 +20,34 @@ public class Liquidacion implements Serializable {
     private Long id;
 
     @Basic private String PEOPLE_CODE_ID;    
-    @Basic private String codigoPrograma;  
+    @Basic private String codigoPrograma; 
+    @Basic private String nombrePrograma; 
+    @Basic private String apellidos;
+    @Basic private String nombres;
+    @Basic private String nacionalidad;
     @Basic private int estrato;
     @Basic private int patrimonio;
     @Basic private int ingreso;    
     @Basic private int ultimoPago;    
     @Basic private int ultimoAnyoPago;    
-    @Basic private int anyoLiquidacion;    
+    @Basic private int anyoLiquidacion;  
+    @Basic private String semestre;
     @Basic private double valorMatricula;    
     @Temporal(TemporalType.TIMESTAMP) private Date fecha;    
     @Basic private String usuario;
+    @Basic private String estado;
     
     @ManyToOne(targetEntity = EncabezadoLiquidacion.class)
     @JoinColumn(name="ENCABEZADO_ID")
     private EncabezadoLiquidacion encabezadoLiquidacion;
+
+    public String getNacionalidad() {
+        return nacionalidad;
+    }
+
+    public void setNacionalidad(String nacionalidad) {
+        this.nacionalidad = nacionalidad;
+    }
 
     public String getCodigoPrograma() {
         return codigoPrograma;
@@ -41,6 +55,14 @@ public class Liquidacion implements Serializable {
 
     public void setCodigoPrograma(String codigoPrograma) {
         this.codigoPrograma = codigoPrograma;
+    }
+
+    public String getNombrePrograma() {
+        return nombrePrograma;
+    }
+
+    public void setNombrePrograma(String nombrePrograma) {
+        this.nombrePrograma = nombrePrograma;
     }
 
     public double getValorMatricula() {
@@ -137,6 +159,38 @@ public class Liquidacion implements Serializable {
 
     public void setEncabezadoLiquidacion(EncabezadoLiquidacion encabezadoLiquidacion) {
         this.encabezadoLiquidacion = encabezadoLiquidacion;
+    }
+
+    public String getApellidos() {
+        return apellidos;
+    }
+
+    public void setApellidos(String apellidos) {
+        this.apellidos = apellidos;
+    }
+
+    public String getNombres() {
+        return nombres;
+    }
+
+    public void setNombres(String nombres) {
+        this.nombres = nombres;
+    }
+
+    public String getSemestre() {
+        return semestre;
+    }
+
+    public void setSemestre(String semestre) {
+        this.semestre = semestre;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
     
 }

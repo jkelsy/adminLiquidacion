@@ -1,0 +1,77 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <ui:composition template="/templates/layout.xhtml">
+        <ui:define name="header">
+            <h:outputStylesheet library="bootstrap" name="css/bootstrap.min.css"/>
+            <h:outputStylesheet library="css" name="sb-admin-2.css"/>
+            <h:outputStylesheet library="css" name="agenda.css"/>
+        </ui:define>
+        <ui:define name="content">
+            <f:metadata>
+                <f:viewAction action="#{actualizarEstudiante.iniciar()}"  />
+            </f:metadata>
+            <h:form id="form_actualizar">                
+
+                <p:panel header="Buscar Estudiante">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <label>Identificación</label>
+                            <p:inputText value="#{actualizarEstudiante.identificacion}"/>
+                        </div>
+                        <div class="col-lg-3">
+                            <label>Apellidos</label>
+                            <p:inputText value="#{actualizarEstudiante.apellidos}"/>
+                        </div>
+                        <div class="col-lg-3">
+                            <label>Nombres</label>
+                            <p:inputText value="#{actualizarEstudiante.nombres}"/>
+                        </div>
+                        <div class="col-lg-1">
+                            <label style="color:white">.......</label>
+                            <p:commandButton value="Buscar" actionListener="#{actualizarEstudiante.buscar}" update="tablaEstudiantes"/>
+                        </div>
+                    </div>
+                </p:panel>
+
+                <p:panel header="Resultado de la búsqueda">
+                    <p:dataTable id="tablaEstudiantes" value="#{actualizarEstudiante.estudianteList}" var="item">
+                        <p:column headerText="Apellidos">
+                            <h:outputText value="#{item.apellidos}"/>
+                        </p:column>
+                        <p:column headerText="Nombres">
+                            <h:outputText value="#{item.nombres}"/>                                                
+                        </p:column>
+                        <p:column headerText="PEOPLE_CODE_ID">
+                            <h:outputText value="#{item.PEOPLE_CODE_ID}" />
+                        </p:column>
+
+                        <p:column headerText="Codigo Programa">
+                            <h:outputText value="#{item.codigoPrograma}" />
+                        </p:column>
+                        <p:column headerText="Nombre Programa">
+                            <h:outputText value="#{item.nombrePrograma}" />
+                        </p:column>
+
+                        <p:column headerText="Año">
+                            <h:outputText value="#{item.anyoLiquidacion}" />
+                        </p:column>
+
+                        <p:column headerText="Semestre">
+                            <h:outputText value="#{item.semestre}" />
+                        </p:column>
+                        
+                        <p:column headerText="...">
+                            <p:commandButton value="soportes" action="#{actualizarEstudiante.soportes(item)}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

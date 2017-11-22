@@ -22,8 +22,6 @@ public class Archivo implements Serializable {
     @Basic private String nombre;
     
     @Basic private String nombreOrigen;
-
-    @Basic private String contentType;
     
     @Basic private String extension;
     
@@ -77,14 +75,6 @@ public class Archivo implements Serializable {
 
     public void setNombreOrigen(String nombreOrigen) {
         this.nombreOrigen = nombreOrigen;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
     }
 
     public String getRutaWeb() {
