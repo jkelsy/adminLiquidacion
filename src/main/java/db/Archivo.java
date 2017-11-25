@@ -32,10 +32,6 @@ public class Archivo implements Serializable {
     @Basic private String tipoSoporte; //identificacion, declaracion_renta, recibo 
     
     @Basic private String PEOPLE_CODE_ID;
-    
-    @Basic private int anyo;
-    
-    @Basic private String semestre;
 
     public Long getId() {
         return this.id;
@@ -99,23 +95,5 @@ public class Archivo implements Serializable {
 
     public void setPEOPLE_CODE_ID(String PEOPLE_CODE_ID) {
         this.PEOPLE_CODE_ID = PEOPLE_CODE_ID;
-    }
-
-    public int getAnyo() {
-        return anyo;
-    }
-
-    public void setAnyo(int anyo) {
-        this.anyo = anyo;
-    }
-
-    public String getSemestre() {
-        return semestre;
-    }
-
-    public void setSemestre(String semestre) {
-        this.semestre = semestre;
-    }
-
-   
+    }   
 }

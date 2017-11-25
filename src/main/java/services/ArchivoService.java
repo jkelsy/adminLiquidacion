@@ -35,9 +35,7 @@ public class ArchivoService implements Serializable{
         Archivo archivo = new Archivo();
         archivo.setExtension(FilenameUtils.getExtension(uploaded.getFileName()));
         archivo.setNombreOrigen(uploaded.getFileName());
-        archivo.setPEOPLE_CODE_ID(PEOPLE_CODE_ID);
-        archivo.setAnyo(anyo);
-        archivo.setSemestre(semestre);
+        archivo.setPEOPLE_CODE_ID(PEOPLE_CODE_ID);        
         archivoRepository.create(archivo);
             
         InputStream input = null;

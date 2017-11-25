@@ -43,10 +43,9 @@ public class NombreDatasourceService implements Serializable {
         return nombreDatasourceRepository.findAll();
     }
 
+    //Método que busca los estudiantes al momento de crear las consultas
     public List<Estudiante> cargarEstudiantes(String datasource, String sql) {
-
         Estudiante e;
-        Estudiante actualizado; //estudiante que entró al formulario de actualizacion y actualizó sus datos
         List<Estudiante> estudianteList = new ArrayList();
         try {
             Context ctx = new InitialContext();
@@ -69,25 +68,69 @@ public class NombreDatasourceService implements Serializable {
 
                     e.setAnyoLiquidacion(rs.getInt(Constantes.ANYO));
                     e.setSemestre(rs.getString(Constantes.SEMESTRE));
-
-                    actualizado = estudianteRepository.findByPEOPLE_CODE_IDAndAnyoAndSemestre(
-                            e.getPEOPLE_CODE_ID(),
-                            e.getAnyoLiquidacion(),
-                            e.getSemestre());
-
-                    if (actualizado != null) {
-                        e.setId(actualizado.getId());
-                        e.setNacionalidad(actualizado.getNacionalidad());
-                        e.setEstrato(actualizado.getEstrato());
-                        e.setUltimoAnyoPago(actualizado.getUltimoAnyoPago());
-                        e.setUltimoPago(actualizado.getUltimoPago());
-                        e.setPatrimonio(actualizado.getPatrimonio());
-                        e.setIngreso(actualizado.getIngreso());
-                    }
-
                     estudianteList.add(e);
                 }
 
+                rs.close();
+                con.close();
+                return estudianteList;
+
+            } catch (SQLException ex) {
+                Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
+            }
+        } catch (NamingException ex) {
+            Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    //Método que carga los estudiantes de un datasource seleccionado para luego preliquidarlos
+    public List<Estudiante> cargarEstudiantesConsulta(String datasource, String sql, int anyo, String semestre) {
+        Estudiante e;
+        Estudiante actualizado; //estudiante que entró al formulario de actualizacion y actualizó sus datos
+        List<Estudiante> estudianteList = new ArrayList();
+        try {
+            Context ctx = new InitialContext();
+            Context envCtx = (Context) ctx.lookup("java:jboss/datasources");
+            DataSource ds = (DataSource) envCtx.lookup(datasource);
+
+            try {
+                Connection con = ds.getConnection();
+                ResultSet rs = con.createStatement().executeQuery(sql);
+
+                while (rs.next()) {
+                    if ((rs.getInt(Constantes.ANYO) == anyo) && (rs.getString(Constantes.SEMESTRE).equals(semestre))) {
+                        e = new Estudiante();
+                        e.setPEOPLE_CODE_ID(rs.getString(Constantes.PEOPLE_CODE_ID));
+
+                        e.setApellidos(rs.getString(Constantes.APELLIDOS));
+                        e.setNombres(rs.getString(Constantes.NOMBRES));
+
+                        e.setCodigoPrograma(rs.getString(Constantes.CODIGO_PROGRAMA));
+                        e.setNombrePrograma(rs.getString(Constantes.NOMBRE_PROGRAMA));
+
+                        e.setAnyoLiquidacion(rs.getInt(Constantes.ANYO));
+                        e.setSemestre(rs.getString(Constantes.SEMESTRE));
+
+                        actualizado = estudianteRepository.findByPEOPLE_CODE_IDAndAnyoAndSemestre(
+                                e.getPEOPLE_CODE_ID(),
+                                e.getAnyoLiquidacion(),
+                                e.getSemestre());
+
+                        if (actualizado != null) {
+                            e.setId(actualizado.getId());
+                            e.setNacionalidad(actualizado.getNacionalidad());
+                            e.setEstrato(actualizado.getEstrato());
+                            e.setUltimoAnyoPago(actualizado.getUltimoAnyoPago());
+                            e.setUltimoPago(actualizado.getUltimoPago());
+                            e.setPatrimonio(actualizado.getPatrimonio());
+                            e.setIngreso(actualizado.getIngreso());
+                        }
+
+                        estudianteList.add(e);
+                    }
+                }
                 rs.close();
                 con.close();
                 return estudianteList;
@@ -183,8 +226,8 @@ public class NombreDatasourceService implements Serializable {
             return null;
         }
     }
-    
-    public String buscarPrimaryFlag(Liquidacion liquidacion){    
+
+    public String buscarPrimaryFlag(Liquidacion liquidacion) {
         String temporal = null;
         try {
             Context ctx = new InitialContext();
@@ -195,12 +238,12 @@ public class NombreDatasourceService implements Serializable {
                 Connection con = ds.getConnection();
 
                 String consulta
-                        = "Select a.PRIMARY_FLAG \n" +
-                            "from Campus.dbo.ACADEMIC a \n" +
-                            "Where a.Academic_Year = '"+liquidacion.getAnyoLiquidacion() +"' "+
-                            "and a.Academic_Term = '" +liquidacion.getSemestre()+"' "+
-                            "and a.People_Code_Id = '"+liquidacion.getPEOPLE_CODE_ID() +"' "+
-                            "and a.CURRICULUM = '"+liquidacion.getCodigoPrograma()+"' ";
+                        = "Select a.PRIMARY_FLAG \n"
+                        + "from Campus.dbo.ACADEMIC a \n"
+                        + "Where a.Academic_Year = '" + liquidacion.getAnyoLiquidacion() + "' "
+                        + "and a.Academic_Term = '" + liquidacion.getSemestre() + "' "
+                        + "and a.People_Code_Id = '" + liquidacion.getPEOPLE_CODE_ID() + "' "
+                        + "and a.CURRICULUM = '" + liquidacion.getCodigoPrograma() + "' ";
 
                 System.err.println(consulta);
 
@@ -232,8 +275,8 @@ public class NombreDatasourceService implements Serializable {
             return null;
         }
     }
-    
-    public String buscarRefVolante(String flag, Liquidacion liquidacion){    
+
+    public String buscarRefVolante(String flag, Liquidacion liquidacion) {
         String temporal = null;
         try {
             Context ctx = new InitialContext();
@@ -244,12 +287,12 @@ public class NombreDatasourceService implements Serializable {
                 Connection con = ds.getConnection();
 
                 String consulta
-                        = "Select rv.NumRef \n" +
-                          "From Campus_Complemento.dbo.Referencia_Volante rv \n " +
-                            "Where rv.Academic_Year = '"+liquidacion.getAnyoLiquidacion()+"' \n " +
-                            "and rv.Academic_Term = '"+liquidacion.getSemestre()+"' \n " +
-                            "and rv.People_Code_Id = '"+liquidacion.getPEOPLE_CODE_ID()+"' \n " +
-                            "and rv.Principal = '"+flag+"'";
+                        = "Select rv.NumRef \n"
+                        + "From Campus_Complemento.dbo.Referencia_Volante rv \n "
+                        + "Where rv.Academic_Year = '" + liquidacion.getAnyoLiquidacion() + "' \n "
+                        + "and rv.Academic_Term = '" + liquidacion.getSemestre() + "' \n "
+                        + "and rv.People_Code_Id = '" + liquidacion.getPEOPLE_CODE_ID() + "' \n "
+                        + "and rv.Principal = '" + flag + "'";
 
                 System.err.println(consulta);
 
@@ -281,9 +324,9 @@ public class NombreDatasourceService implements Serializable {
             return null;
         }
     }
-    
-    public void actualizarDerechoMatricula(String refVolante, Liquidacion liquidacion){    
-        
+
+    public void actualizarDerechoMatricula(String refVolante, Liquidacion liquidacion) {
+
         try {
             Context ctx = new InitialContext();
             Context envCtx = (Context) ctx.lookup("java:jboss/datasources");
@@ -293,48 +336,47 @@ public class NombreDatasourceService implements Serializable {
                 Connection con = ds.getConnection();
 
                 String consulta
-                        = "Update campus.dbo.CHARGECREDIT \n" +
-                          "set AMOUNT = "+liquidacion.getValorMatricula()+" \n" +
-                          "Where ACADEMIC_YEAR = '"+liquidacion.getAnyoLiquidacion()+" '\n" +
-                          "and ACADEMIC_TERM = '"+liquidacion.getSemestre()+" '\n" +
-                          "and PEOPLE_ORG_CODE_ID = '"+liquidacion.getPEOPLE_CODE_ID()+"' \n" +
-                          "and NOTE = "+refVolante+" \n" +
-                          "and CHARGE_CREDIT_CODE in (	'0042ODESPr', \n" +
-                                                        " '0042ODESSc',\n" +
-                                                        " '0037E1y2Pr',\n" +
-                                                        " '0037E1y2Sc',\n" +
-                                                        " '0037Es03Pr',\n" +
-                                                        " '0037Es03Sc',\n" +
-                                                        " '0037Es04Pr',\n" +
-                                                        " '0037Es04Sc',\n" +
-                                                        " '0037Es05Pr',\n" +
-                                                        " '0037Es05Sc',\n" +
-                                                        " '0037Es06Pr',\n" +
-                                                        " '0037Es06Sc')";
+                        = "Update campus.dbo.CHARGECREDIT \n"
+                        + "set AMOUNT = " + liquidacion.getValorMatricula() + " \n"
+                        + "Where ACADEMIC_YEAR = '" + liquidacion.getAnyoLiquidacion() + " '\n"
+                        + "and ACADEMIC_TERM = '" + liquidacion.getSemestre() + " '\n"
+                        + "and PEOPLE_ORG_CODE_ID = '" + liquidacion.getPEOPLE_CODE_ID() + "' \n"
+                        + "and NOTE = " + refVolante + " \n"
+                        + "and CHARGE_CREDIT_CODE in (	'0042ODESPr', \n"
+                        + " '0042ODESSc',\n"
+                        + " '0037E1y2Pr',\n"
+                        + " '0037E1y2Sc',\n"
+                        + " '0037Es03Pr',\n"
+                        + " '0037Es03Sc',\n"
+                        + " '0037Es04Pr',\n"
+                        + " '0037Es04Sc',\n"
+                        + " '0037Es05Pr',\n"
+                        + " '0037Es05Sc',\n"
+                        + " '0037Es06Pr',\n"
+                        + " '0037Es06Sc')";
 
                 System.err.println(consulta);
 
                 try {
                     con.createStatement().executeUpdate(consulta);
-                
+
                 } catch (Exception e1) {
                     System.err.println("Error al actualizar la liquidacion de matrícula");
                     System.err.println(e1.getMessage());
-                    
+
                 }
 
                 con.close();
-                
 
             } catch (SQLException ex) {
                 System.err.println("Error Sql");
                 Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
-                
+
             }
         } catch (NamingException ex) {
             System.err.println("Error de nombre");
             Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
-            
+
         }
     }
 

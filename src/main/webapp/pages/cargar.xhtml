@@ -103,7 +103,7 @@
                                             </p:column>
                                             
                                             <p:column headerText="SOPORTES">
-                                                <ui:repeat value="#{cargar.soportes(item.PEOPLE_CODE_ID, item.anyoLiquidacion, item.semestre)}" var="i">
+                                                <ui:repeat value="#{cargar.soportes(item.PEOPLE_CODE_ID)}" var="i">
                                                     #{i.nombre} 
                                                 </ui:repeat>
                                             </p:column>

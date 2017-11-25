@@ -146,11 +146,17 @@ public class CargarController implements Serializable {
     }
 
     public void cargar() {
-        listadoEstudiantes = datasourceService.cargarEstudiantes(consulta.getNombreDatasource().getNombre(), consulta.getTextoSql());
+        System.err.println(this.anyoLiquidacion);
+        System.err.println(this.semestre);
+        
+        listadoEstudiantes = datasourceService.cargarEstudiantesConsulta(
+                    consulta.getNombreDatasource().getNombre(), 
+                    consulta.getTextoSql(),
+                    this.anyoLiquidacion, this.semestre);
     }
 
-    public List<Archivo> soportes(String PEOPLE_CODE_ID, int anyo, String semestre) {
-        return archivoRepository.findAllByPEOPLE_CODE_IDAndAnyoAndSemestre(PEOPLE_CODE_ID, anyo, semestre);
+    public List<Archivo> soportes(String PEOPLE_CODE_ID) {
+        return archivoRepository.findAllByPEOPLE_CODE_ID(PEOPLE_CODE_ID);
     }
 
     public String liquidar() {
