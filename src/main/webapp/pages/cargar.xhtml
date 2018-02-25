@@ -37,24 +37,7 @@
                                             <o:converter converterId="omnifaces.SelectItemsConverter" list="#{consulta.consultaList}" />
                                         </p:selectOneMenu>  
                                     </div>                                    
-                                </div> 
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <label>Año</label>                                        
-                                        <p:selectOneMenu value="#{cargar.anyoLiquidacion}">
-                                            <f:selectItem noSelectionOption="true" itemLabel="" /> 
-                                            <f:selectItems value="#{cargar.anyoList}"/>
-                                        </p:selectOneMenu>                                        
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <label>Semestre</label>                                        
-                                        <p:selectOneMenu value="#{cargar.semestre}">
-                                            <f:selectItem noSelectionOption="true" itemLabel="" /> 
-                                            <f:selectItem itemLabel="SEM1" itemValue="SEM1" />
-                                            <f:selectItem itemLabel="SEM2" itemValue="SEM2" />
-                                        </p:selectOneMenu>                                        
-                                    </div>
-                                </div>
+                                </div>                               
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <p:commandButton action="#{cargar.cargar()}" value="cargar" update="@widgetVar(table_estudiantes)" class="form-control"/>
@@ -86,26 +69,12 @@
                                             <p:column headerText="PEOPLE_CODE_ID">
                                                 <h:outputText value="#{item.PEOPLE_CODE_ID}" />
                                             </p:column>
-                                            
+
                                             <p:column headerText="Codigo Programa">
                                                 <h:outputText value="#{item.codigoPrograma}" />
                                             </p:column>
                                             <p:column headerText="Nombre Programa">
                                                 <h:outputText value="#{item.nombrePrograma}" />
-                                            </p:column>
-                                            
-                                            <p:column headerText="Año">
-                                                <h:outputText value="#{item.anyoLiquidacion}" />
-                                            </p:column>
-                                            
-                                            <p:column headerText="Semestre">
-                                                <h:outputText value="#{item.semestre}" />
-                                            </p:column>
-                                            
-                                            <p:column headerText="SOPORTES">
-                                                <ui:repeat value="#{cargar.soportes(item.PEOPLE_CODE_ID)}" var="i">
-                                                    #{i.nombre} 
-                                                </ui:repeat>
                                             </p:column>
                                             <p:column>
                                                 <f:facet name="header">
@@ -117,14 +86,49 @@
                                             </p:column>
                                         </p:dataTable>    
                                         <h:commandLink>                                           
-                                            <p:dataExporter type="xls" target="table_estudiantes" fileName="estudiantes" pageOnly="true"/>
-                                            exportar
+                                            <p:dataExporter type="xls" target="table_estudiantes" fileName="estudiantes" pageOnly="true"/>                                            
                                         </h:commandLink>
                                     </div>
                                 </div>   
+                                <div class="row">                                    
+                                    <div class="col-lg-4">
+                                        <label>Conceptos a Liquidar...  </label>
+                                        <p:selectOneMenu value="#{cargar.conceptoSeleccionado}">
+                                            <f:selectItem noSelectionOption="true" itemLabel="" /> 
+                                            <f:selectItems value="#{cargar.conceptoVariableList}" var="concepto"
+                                                           itemLabel="#{concepto.nombre}" itemValue="#{concepto}" />
+                                            <o:converter converterId="omnifaces.SelectItemsConverter" list="#{cargar.conceptoVariableList}" />
+                                        </p:selectOneMenu>   
+                                    </div>
+                                    <div class="col-lg-1">
+                                        <label style="color: white">Agregar</label>
+                                        <p:commandButton value="Agregar"
+                                                         action="#{cargar.agregarConcepto}"
+                                                         update="@widgetVar(tableConceptos)"/>
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="col-lg-12">
-                                        <p:commandButton value="Liquidar" action="#{cargar.liquidar()}" class="form-control" />
+                                        <p:panel widgetVar="panelConceptos">                                            
+                                            <f:facet name="header">
+                                                Conceptos Seleccionados
+                                            </f:facet>
+                                            <p:dataTable widgetVar="tableConceptos" value="#{cargar.validarBean.conceptosLiquidar}" var="concepto1">
+                                                <p:column headerText="Nombre">
+                                                    <h:outputText value="#{concepto1.nombre}"/> 
+                                                </p:column>
+                                                <p:column headerText="Opciones">
+                                                    <p:commandButton value="Quitar"
+                                                                     action="#{cargar.eliminarConcepto(concepto1)}"
+                                                                     update="@widgetVar(tableConceptos)"/>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </p:panel> 
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <p:commandButton value="Validar" action="#{cargar.validar()}" class="form-control" />
                                     </div>
                                 </div>
                             </div>

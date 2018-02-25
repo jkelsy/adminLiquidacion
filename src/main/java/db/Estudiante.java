@@ -25,47 +25,33 @@ import javax.persistence.Transient;
 @Entity
 public class Estudiante implements Serializable { 
     
-    @Inject @Transient private DatoVariableRepository datoVariableRepository;
-    @Inject @Transient private EstratoRepository estratoRepository; 
-    @Inject @Transient private PatrimonioRepository patrimonioRepository;
-    @Inject @Transient private IngresoRepository ingresoRepository; 
-    
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
-
-    @Basic private String PEOPLE_CODE_ID;
-    
-    @Basic private String codigoPrograma;
-    
-    @Basic private String nombrePrograma;
-    
-    @Basic private String semestre;
-    
-    @Basic private int anyoLiquidacion;    
-    
-    @Basic private String Nombres;
-    
-    @Basic private String Apellidos;
-    
+    @Basic private String PEOPLE_CODE_ID;    
+    @Basic private String codigoPrograma;    
+    @Basic private String nombrePrograma;    
+    @Basic private String Nombres;    
+    @Basic private String Apellidos;    
     @Basic private String nacionalidad;
-
-    @Basic private int estrato;
-
+    @Basic private int estrato;    
+    @Basic private String tipoColegio; //oficial o privado
     @Basic private int patrimonio;
-
-    @Basic private int ingreso;
+    @Basic private int ingreso;    
+    @Basic private int ultimoPago; //pago mensual último anyo secundaria    
+    @Basic private int ultimoAnyoPago; //último año secundaria    
     
-    @Basic private int ultimoPago; //pago mensual último anyo secundaria
-    
-    @Basic private int ultimoAnyoPago; //último año secundaria
-    
-    @Temporal(TemporalType.TIMESTAMP) private Date fechaActualizacion;
-    
-    @Basic private String actualizadoPor;
-    
-    @Basic private Boolean liquidar;
-    
+    @Temporal(TemporalType.TIMESTAMP) private Date fechaActualizacion;    
+    @Basic private String actualizadoPor;    
+    @Basic private Boolean liquidar;    
     @Basic private Boolean liquidado;
+
+    public String getTipoColegio() {
+        return tipoColegio;
+    }
+
+    public void setTipoColegio(String tipoColegio) {
+        this.tipoColegio = tipoColegio;
+    }
 
     public Boolean getLiquidado() {
         return liquidado;
@@ -73,14 +59,6 @@ public class Estudiante implements Serializable {
 
     public void setLiquidado(Boolean liquidado) {
         this.liquidado = liquidado;
-    }
-
-    public String getSemestre() {
-        return semestre;
-    }
-
-    public void setSemestre(String semestre) {
-        this.semestre = semestre;
     }
 
     public String getCodigoPrograma() {
@@ -137,14 +115,6 @@ public class Estudiante implements Serializable {
 
     public void setUltimoAnyoPago(int ultimoAnyoPago) {
         this.ultimoAnyoPago = ultimoAnyoPago;
-    }
-
-    public int getAnyoLiquidacion() {
-        return anyoLiquidacion;
-    }
-
-    public void setAnyoLiquidacion(int anyoLiquidacion) {
-        this.anyoLiquidacion = anyoLiquidacion;
     }
 
     public Long getId() {
@@ -211,101 +181,6 @@ public class Estudiante implements Serializable {
 
     public void setNacionalidad(String nacionalidad) {
         this.nacionalidad = nacionalidad;
-    }
-    
-    public double promedioIPC(){
-        DatoVariable datoVariable;
-        double temporal = 0;
-        int contador = 0;
-        
-        for (int i = this.ultimoAnyoPago; i<this.anyoLiquidacion; i++){
-            datoVariable = datoVariableRepository.findOptionalByAnyoAndNombre(i, Constantes.IPC);
-            if(datoVariable == null){
-                System.err.println("Mierda");
-            }else{
-                //temporal += datoVariable.getValor();
-                
-                System.err.println(datoVariable);
-                contador++;
-            }
-            
-        }
-        
-        if(contador > 0){
-            return (temporal / contador);
-        }
-        
-        return temporal;
-    } 
-    
-    public int diferenciaAnyos(){
-        if((anyoLiquidacion - ultimoAnyoPago)<= 10){
-            return (anyoLiquidacion - ultimoAnyoPago);
-        }else{
-            return 10;
-        }
-    }
-    
-    public double liquidacionSecundaria(){
-        double promedio = promedioIPC();
-        int diferencia = diferenciaAnyos();
-        double temporal = 4*ultimoPago*(Math.pow(1+promedio, diferencia));
-        return temporal;
-    }
-    
-    public double liquidacionEstrato(){
-        double smlv = 1;
-        double porcentajeEstrato = 1;
-        
-        DatoVariable datoVariable = datoVariableRepository.findOptionalByAnyoAndNombre(anyoLiquidacion, "SMLV");        
-        if(datoVariable != null){
-            smlv = datoVariable.getValor();
-        }                
-        
-        Estrato estratoTemporal = estratoRepository.findOptionalByAnyoAndEstrato(anyoLiquidacion, estrato);        
-        if(estratoTemporal != null){
-            porcentajeEstrato = estratoTemporal.getValorSMLV();
-        }
-        
-        return smlv * porcentajeEstrato;        
-    }
-    
-    public double liquidacionPatrimonio(){
-        double smlv = 1;
-        double porcentajePatrimonio = 1;
-        DatoVariable datoVariable = datoVariableRepository.findOptionalByAnyoAndNombre(anyoLiquidacion, "SMLV");        
-        if(datoVariable != null){
-            smlv = datoVariable.getValor();
-        }
-        
-        Patrimonio patrimonioTemporal = patrimonioRepository.
-                findOptionalByDesdeGreaterThanAndHastaLessThanEqualsAndAnyo(patrimonio, patrimonio, anyoLiquidacion);
-        if(patrimonioTemporal != null){
-            porcentajePatrimonio = patrimonioTemporal.getValorSMLV();
-        }
-        
-        return smlv * porcentajePatrimonio;
-    }
-    
-    public double liquidacionIngreso(){
-        double smlv = 1;
-        double porcentajeIngreso = 1;
-        DatoVariable datoVariable = datoVariableRepository.findOptionalByAnyoAndNombre(anyoLiquidacion, "SMLV");        
-        if(datoVariable != null){
-            smlv = datoVariable.getValor();
-        }
-        
-        Ingreso ingresoTemporal = ingresoRepository.
-                findOptionalByDesdeGreaterThanAndHastaLessThanEqualsAndAnyo(ingreso, ingreso, anyoLiquidacion);
-        if(ingresoTemporal != null){
-            porcentajeIngreso = ingresoTemporal.getValorSMLV();
-        }
-        
-        return smlv * porcentajeIngreso;
-    }
-    
-    public double derechoMatricula(){
-        return (0.4*liquidacionSecundaria())+liquidacionEstrato()+liquidacionPatrimonio()+liquidacionIngreso();
     }
     
 }

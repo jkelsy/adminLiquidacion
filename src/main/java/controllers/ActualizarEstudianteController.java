@@ -64,9 +64,7 @@ public class ActualizarEstudianteController implements Serializable {
         this.configuracion = configuracionRepository.findBy(1L);
     }
     
-    public void buscar(){
-        System.out.println(configuracion.getAnyo());
-        System.out.println(configuracion.getSemestre());
+    public void buscar(){        
         estudianteList = nds.buscarEstudiantes(
                 identificacion, apellidos, nombres, 
                 configuracion.getAnyo(), configuracion.getSemestre());

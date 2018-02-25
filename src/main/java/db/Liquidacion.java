@@ -40,6 +40,10 @@ public class Liquidacion implements Serializable {
     @ManyToOne(targetEntity = EncabezadoLiquidacion.class)
     @JoinColumn(name="ENCABEZADO_ID")
     private EncabezadoLiquidacion encabezadoLiquidacion;
+    
+    @ManyToOne(targetEntity = ConceptoVariable.class)
+    @JoinColumn(name="CONCEPTO_ID")
+    private ConceptoVariable concepto;
 
     public String getNacionalidad() {
         return nacionalidad;
@@ -191,6 +195,14 @@ public class Liquidacion implements Serializable {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public ConceptoVariable getConcepto() {
+        return concepto;
+    }
+
+    public void setConcepto(ConceptoVariable concepto) {
+        this.concepto = concepto;
     }
     
 }

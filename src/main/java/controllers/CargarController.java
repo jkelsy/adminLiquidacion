@@ -1,12 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package controllers;
 
 import configuracion.Constantes;
 import db.Archivo;
+import db.ConceptoVariable;
 import db.Configuracion;
 import db.Consulta;
 import db.DatoVariable;
@@ -15,9 +11,9 @@ import db.Estrato;
 import db.Estudiante;
 import db.Ingreso;
 import db.Liquidacion;
-import db.NombreDatasource;
 import db.Patrimonio;
 import fachade.ArchivoRepository;
+import fachade.ConceptoVariableRepository;
 import fachade.ConfiguracionRepository;
 import fachade.ConsultaRepository;
 import fachade.DatoVariableRepository;
@@ -32,15 +28,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import javax.annotation.PostConstruct;
-import javax.ejb.Stateless;
-import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.Transient;
 import org.hibernate.JDBCException;
+import services.LiquidacionService;
 import services.NombreDatasourceService;
 
 /**
@@ -51,56 +44,53 @@ import services.NombreDatasourceService;
 @ViewScoped
 public class CargarController implements Serializable {
 
-    @Inject
-    private NombreDatasourceService datasourceService;
-    @Inject
-    private ConsultaRepository consultaRepository;
-    @Inject
-    private ArchivoRepository archivoRepository;
-    @Inject
-    private EstudianteRepository er;
-    @Inject
-    private EncabezadoLiquidacionRepository elr;
-    @Inject
-    private LiquidacionRepository lr;
-    @Inject
-    private DatoVariableRepository datoVariableRepository;
-    @Inject
-    private EstratoRepository estratoRepository;
-    @Inject
-    private PatrimonioRepository patrimonioRepository;
-    @Inject
-    private IngresoRepository ingresoRepository;
-    @Inject
-    private ConfiguracionRepository configuracionRepository;
+    @Inject private NombreDatasourceService datasourceService;
+    @Inject private ConsultaRepository consultaRepository;
+    @Inject private ArchivoRepository archivoRepository;
+    @Inject private EstudianteRepository er;
+    @Inject private EncabezadoLiquidacionRepository elr;
+    @Inject private LiquidacionRepository lr;
+    @Inject private DatoVariableRepository datoVariableRepository;
+    @Inject private EstratoRepository estratoRepository;
+    @Inject private PatrimonioRepository patrimonioRepository;
+    @Inject private IngresoRepository ingresoRepository;
+    @Inject private ConfiguracionRepository configuracionRepository;
+    @Inject private ConceptoVariableRepository conceptoVariableRepository;
+    @Inject private LiquidacionService liquidacionService;
+    @Inject private ValidarBean validarBean;   
 
     private Consulta consulta;
-
     private List<Consulta> consultaList;
-
     private List<Estudiante> listadoEstudiantes;
-
     private List<Integer> anyoList;
-
     private Configuracion configuracion;
 
-    private int anyoLiquidacion;
-    private String semestre;
+    private ConceptoVariable conceptoSeleccionado;
+    
+    private List<ConceptoVariable> conceptoVariableList;
 
-    public int getAnyoLiquidacion() {
-        return anyoLiquidacion;
+    public ValidarBean getValidarBean() {
+        return validarBean;
     }
 
-    public void setAnyoLiquidacion(int anyoLiquidacion) {
-        this.anyoLiquidacion = anyoLiquidacion;
+    public void setValidarBean(ValidarBean validarBean) {
+        this.validarBean = validarBean;
     }
 
-    public String getSemestre() {
-        return semestre;
+    public ConceptoVariable getConceptoSeleccionado() {
+        return conceptoSeleccionado;
     }
 
-    public void setSemestre(String semestre) {
-        this.semestre = semestre;
+    public void setConceptoSeleccionado(ConceptoVariable conceptoSeleccionado) {
+        this.conceptoSeleccionado = conceptoSeleccionado;
+    }    
+
+    public List<ConceptoVariable> getConceptoVariableList() {
+        return conceptoVariableList;
+    }
+
+    public void setConceptoVariableList(List<ConceptoVariable> conceptoVariableList) {
+        this.conceptoVariableList = conceptoVariableList;
     }
 
     public List<Integer> getAnyoList() {
@@ -136,7 +126,9 @@ public class CargarController implements Serializable {
     }
 
     public void iniciar() {
+        this.conceptoSeleccionado = new ConceptoVariable();
         this.listadoEstudiantes = new ArrayList<>();
+        this.conceptoVariableList = conceptoVariableRepository.findAll();       
         this.consultaList = consultaRepository.findAll();
         this.anyoList = new ArrayList<>();
         for (int i = -10; i < 10; i++) {
@@ -146,46 +138,66 @@ public class CargarController implements Serializable {
     }
 
     public void cargar() {
-        System.err.println(this.anyoLiquidacion);
-        System.err.println(this.semestre);
-        
+
         listadoEstudiantes = datasourceService.cargarEstudiantesConsulta(
-                    consulta.getNombreDatasource().getNombre(), 
-                    consulta.getTextoSql(),
-                    this.anyoLiquidacion, this.semestre);
+                consulta.getNombreDatasource().getNombre(),
+                consulta.getTextoSql());
     }
 
     public List<Archivo> soportes(String PEOPLE_CODE_ID) {
         return archivoRepository.findAllByPEOPLE_CODE_ID(PEOPLE_CODE_ID);
     }
 
-    public String liquidar() {
+    public String validar() {
+        
+        validarBean.iniciarEstudiantes();
+        
+        try {
+            for (Estudiante estudiante : listadoEstudiantes) {
+                
+                if(!liquidacionService.validarSoportes(estudiante.getPEOPLE_CODE_ID())){
+                    System.err.println("Dentro: " + estudiante);
+                    validarBean.addEstudianteSinSoporte(estudiante);
+                }else{
+                    validarBean.addEstudianteALiquidar(estudiante);
+                } 
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+
+        return "/pages/validar?faces-redirect=true"; //+ encabezadoLiquidacion.getId();
+    }
+    
+    public String liquidar(){        
+        return "/pages/liquidar?faces-redirect=true"; //+ encabezadoLiquidacion.getId();
+    }
+
+    public String preliquidar() {
         EncabezadoLiquidacion encabezadoLiquidacion = new EncabezadoLiquidacion();
         encabezadoLiquidacion.setFechaLiquidacion(new Date());
-        encabezadoLiquidacion.setAnyoLiquidacion(anyoLiquidacion);
-        encabezadoLiquidacion.setSemestre(semestre);
+        encabezadoLiquidacion.setAnyoLiquidacion(this.configuracion.getAnyo());
+        encabezadoLiquidacion.setSemestre(this.configuracion.getSemestre());
         encabezadoLiquidacion.setLiquidadoPor(FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal().getName());
         encabezadoLiquidacion = elr.saveAndFlush(encabezadoLiquidacion);
 
         Liquidacion liquidacion;
         DatoVariable datoVariable = null;
         double smlv = 1;
-        datoVariable = datoVariableRepository.findOptionalByAnyoAndNombre(anyoLiquidacion, "SMLV");
+        datoVariable = datoVariableRepository.findOptionalByAnyoAndNombre(this.configuracion.getAnyo(), "SMLV");
         if (datoVariable != null) {
             smlv = datoVariable.getValor();
         }
 
         for (Estudiante estudiante : listadoEstudiantes) {
-
             if (estudiante.getLiquidar()) {
-
                 try {
                     liquidacion = new Liquidacion();
                     liquidacion.setFecha(encabezadoLiquidacion.getFechaLiquidacion());
                     liquidacion.setEncabezadoLiquidacion(encabezadoLiquidacion);
                     liquidacion.setPEOPLE_CODE_ID(estudiante.getPEOPLE_CODE_ID());
-                    liquidacion.setAnyoLiquidacion(anyoLiquidacion);
-                    liquidacion.setSemestre(semestre);
+                    liquidacion.setAnyoLiquidacion(this.configuracion.getAnyo());
+                    liquidacion.setSemestre(this.configuracion.getSemestre());
                     liquidacion.setApellidos(estudiante.getApellidos());
                     liquidacion.setNombres(estudiante.getNombres());
                     liquidacion.setNombrePrograma(estudiante.getNombrePrograma());
@@ -196,9 +208,9 @@ public class CargarController implements Serializable {
 
                         if ("Extrangero".equals(estudiante.getNacionalidad())) {
                             liquidacion.setNacionalidad("Extrangero");
-                            liquidacion.setValorMatricula(smlv*6);
+                            liquidacion.setValorMatricula(smlv * 6);
                         } else {
-                            
+
                             //validar los soportes...
                             liquidacion.setNacionalidad("Colombiano");
                             liquidacion.setEstrato(estudiante.getEstrato());
@@ -210,8 +222,8 @@ public class CargarController implements Serializable {
                             //Inicio proceso liquidación
                             //Diferencia Años:
                             int diferenciaAnyos = 0;
-                            if ((anyoLiquidacion - estudiante.getUltimoAnyoPago()) <= 10) {
-                                diferenciaAnyos = anyoLiquidacion - estudiante.getUltimoAnyoPago();
+                            if ((this.configuracion.getAnyo() - estudiante.getUltimoAnyoPago()) <= 10) {
+                                diferenciaAnyos = this.configuracion.getAnyo() - estudiante.getUltimoAnyoPago();
                             } else {
                                 diferenciaAnyos = 10;
                             }
@@ -229,14 +241,14 @@ public class CargarController implements Serializable {
                             } else {
                                 for (int i = 0; i < diferenciaAnyos; i++) {
                                     datoVariable = datoVariableRepository.findOptionalByAnyoAndNombre(
-                                            anyoLiquidacion - 1 - i, Constantes.IPC);
+                                            this.configuracion.getAnyo() - 1 - i, Constantes.IPC);
 
                                     if (datoVariable == null) {
-                                        System.out.println("NULL Iteracion: " + (anyoLiquidacion - 1 - i));
+                                        System.out.println("NULL Iteracion: " + (this.configuracion.getAnyo() - 1 - i));
 
                                     } else {
                                         promedioIPC += datoVariable.getValor();
-                                        System.out.println("Iteracion: " + (anyoLiquidacion - 1 - i));
+                                        System.out.println("Iteracion: " + (this.configuracion.getAnyo() - 1 - i));
                                         System.err.println(datoVariable);
                                         contador++;
                                     }
@@ -257,12 +269,12 @@ public class CargarController implements Serializable {
                             //liquidacion por estrato
                             double porcentajeEstrato = 1;
 
-                            datoVariable = datoVariableRepository.findOptionalByAnyoAndNombre(anyoLiquidacion, "SMLV");
+                            datoVariable = datoVariableRepository.findOptionalByAnyoAndNombre(this.configuracion.getAnyo(), "SMLV");
                             if (datoVariable != null) {
                                 smlv = datoVariable.getValor();
                             }
 
-                            Estrato estratoTemporal = estratoRepository.findOptionalByAnyoAndEstrato(anyoLiquidacion, estudiante.getEstrato());
+                            Estrato estratoTemporal = estratoRepository.findOptionalByAnyoAndEstrato(this.configuracion.getAnyo(), estudiante.getEstrato());
                             if (estratoTemporal != null) {
                                 porcentajeEstrato = estratoTemporal.getValorSMLV();
                             }
@@ -282,12 +294,12 @@ public class CargarController implements Serializable {
                             int equivalenciaPatrimonioEntero = (int) Math.ceil(equivalenciaPatrimonio);
 
                             System.out.println("Equivalencia patrimonio: " + equivalenciaPatrimonioEntero);
-                            System.out.println("Año liquidacion: " + anyoLiquidacion);
+                            System.out.println("Año liquidacion: " + this.configuracion.getAnyo());
 
                             Patrimonio patrimonioTemporal = patrimonioRepository.
                                     findByEquivalenciaAndAnyo(
                                             equivalenciaPatrimonioEntero,
-                                            anyoLiquidacion);
+                                            this.configuracion.getAnyo());
 
                             System.err.println("Patrimonio Temporal: " + patrimonioTemporal);
 
@@ -314,7 +326,7 @@ public class CargarController implements Serializable {
                             Ingreso ingresoTemporal = ingresoRepository.
                                     findByEquivalenciaAndAnyo(
                                             equivalenciaIngresoEntero,
-                                            anyoLiquidacion);
+                                            this.configuracion.getAnyo());
                             if (ingresoTemporal != null) {
                                 porcentajeIngreso = ingresoTemporal.getValorSMLV();
                             }
@@ -337,9 +349,7 @@ public class CargarController implements Serializable {
                     } else {
                         //este estudiante no se ha actualizado
                         liquidacion.setEstado(Constantes.ESTADO_SIN_ACTUALIZAR);
-
                     }
-
                     liquidacion = lr.saveAndFlush(liquidacion);
 
                 } catch (JDBCException e) {
@@ -354,5 +364,16 @@ public class CargarController implements Serializable {
         listadoEstudiantes.forEach((estudiante) -> {
             estudiante.setLiquidar(!estudiante.getLiquidar());
         });
+    }
+
+    public void agregarConcepto() {
+        System.err.println(conceptoSeleccionado);
+        //if (this.validarBean.getConceptosLiquidar().indexOf(conceptoSeleccionado) == -1) {
+        validarBean.addConceptoLiquidar(conceptoSeleccionado);
+        //}
+    }
+
+    public void eliminarConcepto(ConceptoVariable conceptoVariable) {
+        validarBean.getConceptosLiquidar().remove(conceptoVariable);
     }
 }

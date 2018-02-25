@@ -1,5 +1,6 @@
 package configuracion;
 
+import db.ConceptoVariable;
 import db.Configuracion;
 import db.DatoVariable;
 import db.Estrato;
@@ -9,6 +10,7 @@ import db.Patrimonio;
 import db.Permiso;
 import db.Rol;
 import db.Usuario;
+import fachade.ConceptoVariableRepository;
 import fachade.ConfiguracionRepository;
 import fachade.DatoVariableRepository;
 import fachade.EstratoRepository;
@@ -21,40 +23,29 @@ import fachade.UsuarioRepository;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.inject.Inject;
+import javax.script.ScriptException;
+import services.ConceptoVariableService;
 
 @Startup
 @Singleton
 public class Inicio {
-    @Inject
-    private UsuarioRepository usuarioRepository;
-
-    @Inject
-    private RolRepository rolRepository;
-
-    @Inject
-    private PermisoRepository permisoRepository;
-    
-    @Inject
-    private NombreDatasourceRepository nombreRepository;
-    
-    @Inject
-    private EstratoRepository estratoRepository;
-    
-    @Inject
-    private PatrimonioRepository patrimonioRepository;
-    
-    @Inject 
-    private IngresoRepository ingresoRepository;
-    
-    @Inject
-    private DatoVariableRepository datoVariableRepository;
-    
-    @Inject
-    private ConfiguracionRepository configuracionRepository;
+    @Inject private UsuarioRepository usuarioRepository;
+    @Inject private RolRepository rolRepository;
+    @Inject private PermisoRepository permisoRepository;    
+    @Inject private NombreDatasourceRepository nombreRepository;    
+    @Inject private EstratoRepository estratoRepository;    
+    @Inject private PatrimonioRepository patrimonioRepository;    
+    @Inject private IngresoRepository ingresoRepository;    
+    @Inject private DatoVariableRepository datoVariableRepository;    
+    @Inject private ConfiguracionRepository configuracionRepository;
+    @Inject private ConceptoVariableRepository conceptoVariableRepository;
+    @Inject private ConceptoVariableService cvs;
 
     private void iniciarSeguridad() {
 
@@ -205,7 +196,7 @@ public class Inicio {
     }
     
     public void iniciarConfiguracion(){
-        Configuracion configuracion = configuracionRepository.findBy(1L);
+        Configuracion configuracion = configuracionRepository.findBy(1L);       
         
         if(configuracion == null){
             configuracion = new Configuracion();
@@ -215,9 +206,34 @@ public class Inicio {
         }
                 
     }
+    
+    public void iniciarConceptos(){
+        
+        ConceptoVariable conceptoVariable = conceptoVariableRepository.findOptionalByNombre("MATRICULA");
+        
+        if(conceptoVariable == null){
+            conceptoVariable = new ConceptoVariable();
+            conceptoVariable.setNombre("MATRICULA");
+            conceptoVariable.setFormula("MATRICULA");
+            conceptoVariable.setTipo("MATRICULA");
+            conceptoVariableRepository.save(conceptoVariable);
+        }
+        
+    }
 
     @PostConstruct
     public void iniciar() { 
+        
+        System.err.println("Iniciar Prueba Evaluación");        
+        ConceptoVariable cv = new ConceptoVariable();
+        String formula = "4 * BECADO";
+        try {
+            System.err.println(cvs.evaluar(formula));
+        } catch (ScriptException ex) {
+            Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        iniciarConceptos();
         iniciarIPC();
         iniciarIngresos();
         iniciarPatrimonios();

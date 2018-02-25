@@ -5,6 +5,7 @@
 package db;
 
 import java.io.Serializable;
+import java.util.Objects;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,18 +22,10 @@ public class ConceptoVariable implements Serializable{
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
-
-    @Basic
-    private int anyo;
-
-    @Basic
-    private int semestre;
-
-    @Basic
-    private Double valor;
-
-    @Basic
-    private String operacion;
+    
+    @Basic private String nombre;    
+    @Basic private String formula;
+    @Basic private String tipo;
 
     public Long getId() {
         return this.id;
@@ -42,41 +35,49 @@ public class ConceptoVariable implements Serializable{
         this.id = id;
     }
 
-
-    public int getAnyo() {
-        return this.anyo;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setAnyo(int anyo) {
-        this.anyo = anyo;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
-
-    public int getSemestre() {
-        return this.semestre;
+    public String getFormula() {
+        return formula;
     }
 
-    public void setSemestre(int semestre) {
-        this.semestre = semestre;
+    public void setFormula(String formula) {
+        this.formula = formula;
     }
 
-
-    public Double getValor() {
-        return this.valor;
+    public String getTipo() {
+        return tipo;
     }
 
-    public void setValor(Double valor) {
-        this.valor = valor;
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {return false;}
+        if (!java.util.Objects.equals(getClass(), obj.getClass())) {return false;}
+        final ConceptoVariable other = (ConceptoVariable) obj;
+        if (!java.util.Objects.equals(this.getId(), other.getId())) {        return false;        }
+        return true;
     }
 
-
-    public String getOperacion() {
-        return this.operacion;
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 41 * hash + (this.getId() != null ? this.getId().hashCode() : 0);
+        return hash;
     }
 
-    public void setOperacion(String operacion) {
-        this.operacion = operacion;
+    @Override
+    public String toString() {
+        return "ConceptoVariable{" + " id=" + id + '}';
     }
-
 
 }

@@ -14,15 +14,13 @@ public abstract class EstudianteRepository
         implements EntityRepository<Estudiante, Long> , 
                    CriteriaSupport<Estudiante> {
     
-    public Estudiante findByPEOPLE_CODE_IDAndAnyoAndSemestre(String PEOPLE_CODE_ID, int anyo, String semestre){
+    public Estudiante findByPEOPLE_CODE_ID(String PEOPLE_CODE_ID){
         
         Estudiante temporal = null;
         
         try {
-            temporal = typedQuery("select e from Estudiante e where e.PEOPLE_CODE_ID = ?1 and e.anyoLiquidacion = ?2 and e.semestre = ?3")
-                .setParameter(1, PEOPLE_CODE_ID)
-                .setParameter(2, anyo)
-                .setParameter(3, semestre)
+            temporal = typedQuery("select e from Estudiante e where e.PEOPLE_CODE_ID = ?1 ")
+                .setParameter(1, PEOPLE_CODE_ID)                
                 .getSingleResult();
         } catch (Exception e) {
             return null;

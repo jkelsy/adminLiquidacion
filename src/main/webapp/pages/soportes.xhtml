@@ -35,7 +35,8 @@
             </f:metadata>
             <div class="row">                
                 <div class="col-lg-12">
-                    <h:form id="fListTarea">                        
+                    <h:form id="formSoportes">   
+                        <p:growl id="growl" showDetail="true" />
                         <div class="panel panel-default">
                             <h1>
                                 #{soporteController.estudiante.apellidos} 
@@ -122,6 +123,14 @@
                                     <f:facet name="header">Pago mensualidad último año de Secundaria</f:facet>
                                     <div class="row">
                                         <div class="col-lg-2">
+                                            <label>Tipo Institución Educativa:</label>
+                                            <p:selectOneMenu value="#{soporteController.estudiante.tipoColegio}">
+                                                <f:selectItem noSelectionOption="true" itemValue="" itemLabel="" />
+                                                <f:selectItem itemValue="Oficial" itemLabel="Oficial" />
+                                                <f:selectItem itemValue="Privado" itemLabel="Privado" />                                                
+                                            </p:selectOneMenu>
+                                        </div>
+                                        <div class="col-lg-2">
                                             <label>Año pagado</label>
                                             <p:selectOneMenu value="#{soporteController.estudiante.ultimoAnyoPago}">
                                                 <f:selectItem noSelectionOption="true" itemLabel="" /> 
@@ -133,7 +142,7 @@
                                             <p:inputNumber value="#{soporteController.estudiante.ultimoPago}"/>
                                         </div>
 
-                                        <div class="col-lg-5">
+                                        <div class="col-lg-3">
                                             <label>Volante Pago última mensualidad</label>
                                             <p:fileUpload
                                                 fileUploadListener="#{soporteController.cargarSoporteMensualidad}"
@@ -299,7 +308,7 @@
 
                                 <div class="row">
                                     <div class="col-lg-12">
-                                        <p:commandButton action="#{soporteController.guardar}" value="Guardar" class="form-control" />
+                                        <p:commandButton action="#{soporteController.guardar}" value="Guardar" class="form-control" update="formSoportes" />
                                     </div>
                                 </div>
 

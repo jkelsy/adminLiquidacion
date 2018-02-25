@@ -31,21 +31,31 @@ public class ArchivoService implements Serializable{
     @Inject private ArchivoFacade archivoRepository;
     @Inject private ApplicationBean application;
     
-    public Archivo upload(String tipo, String PEOPLE_CODE_ID, int anyo, String semestre, UploadedFile uploaded){        
-        Archivo archivo = new Archivo();
+    public Archivo upload(String tipo, String PEOPLE_CODE_ID, UploadedFile uploaded){        
+        
+        Archivo archivo = archivoRepository.findByTipoAndPEOPLE_CODE_ID(tipo, PEOPLE_CODE_ID);
+        
+        if(archivo == null){
+            archivo = new Archivo();
+        }
+        
         archivo.setExtension(FilenameUtils.getExtension(uploaded.getFileName()));
         archivo.setNombreOrigen(uploaded.getFileName());
-        archivo.setPEOPLE_CODE_ID(PEOPLE_CODE_ID);        
-        archivoRepository.create(archivo);
+        archivo.setPEOPLE_CODE_ID(PEOPLE_CODE_ID);       
+        archivo.setTipoSoporte(tipo);
+        
+        if(archivo.getId() == null){
+            archivoRepository.create(archivo);
+        }else{
+            archivoRepository.edit(archivo);
+        }
             
         InputStream input = null;
         OutputStream output = null;        
         try {
-            input = uploaded.getInputstream();
-            
+            input = uploaded.getInputstream();            
             archivo.setNombre(tipo+"_"+archivo.getId().toString()+"."+archivo.getExtension());
-            archivo.setRutaFisica(application.getRutaFisicaArchivos()+File.separator+archivo.getNombre());
-            archivo.setTipoSoporte(tipo);
+            archivo.setRutaFisica(application.getRutaFisicaArchivos()+File.separator+archivo.getNombre());            
             archivo.setRutaWeb(archivo.getNombre());
             archivoRepository.edit(archivo);
             output = new FileOutputStream(new File(application.getRutaFisicaArchivos(), archivo.getNombre()));

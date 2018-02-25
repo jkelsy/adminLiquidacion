@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
@@ -13,6 +15,16 @@ import javax.persistence.Table;
  */
 @Entity(name = "Archivo")
 @Table(name = "archivo")
+@NamedQueries({
+    @NamedQuery(
+        name = "Archivo.findByTipoAndCode", 
+        query = "Select e from Archivo e where e.tipoSoporte = :TIPO and e.PEOPLE_CODE_ID = :PEOPLE_CODE_ID"
+    ),
+    @NamedQuery(
+        name = "Archivo.findByEstudiante", 
+        query = "Select e from Archivo e where e.PEOPLE_CODE_ID = :PEOPLE_CODE_ID"
+    )
+})
 public class Archivo implements Serializable {
 
     @Id

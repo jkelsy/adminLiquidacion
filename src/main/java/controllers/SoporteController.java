@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -140,6 +141,12 @@ public class SoporteController implements Serializable {
         HttpSession session = SessionUtils.getSession();
         this.estudiante = ((Estudiante) session.getAttribute("estudiante"));
         
+        Estudiante temporal = er.findByPEOPLE_CODE_ID(
+                estudiante.getPEOPLE_CODE_ID());
+        
+        if(temporal != null ){
+            this.estudiante = temporal;
+        }
         
         this.archivoIdentificacion = archivoFacade.findByTipoAndPEOPLE_CODE_ID(
                 Constantes.TIPO_IDENTIFICACION, this.estudiante.getPEOPLE_CODE_ID());
@@ -183,65 +190,49 @@ public class SoporteController implements Serializable {
     public void cargarSoporteIdentificacion(FileUploadEvent event) {
         
         this.archivoIdentificacion = archivoService.upload(Constantes.TIPO_IDENTIFICACION, 
-                estudiante.getPEOPLE_CODE_ID(), 
-                this.configuracion.getAnyo(),
-                this.configuracion.getSemestre(),                
+                estudiante.getPEOPLE_CODE_ID(),                               
                 event.getFile());
     }
     
     public void cargarSoporteEstrato(FileUploadEvent event) {
         this.archivoEstrato = archivoService.upload(Constantes.TIPO_ESTRATO, 
-                estudiante.getPEOPLE_CODE_ID(), 
-                this.configuracion.getAnyo(),
-                this.configuracion.getSemestre(),                
+                estudiante.getPEOPLE_CODE_ID(),                          
                 event.getFile());
     }
     
     public void cargarSoporteMensualidad(FileUploadEvent event) {
         this.archivoMensualidad = archivoService.upload(Constantes.TIPO_MENSUALIDAD, 
-                estudiante.getPEOPLE_CODE_ID(), 
-                this.configuracion.getAnyo(),
-                this.configuracion.getSemestre(),                
+                estudiante.getPEOPLE_CODE_ID(),                              
                 event.getFile());
     }
     
     public void cargarSoporteInstrumentos(FileUploadEvent event) {
         this.archivoInstrumentosPublicos = archivoService.upload(Constantes.TIPO_INSTRUMENTOS, 
-                estudiante.getPEOPLE_CODE_ID(), 
-                this.configuracion.getAnyo(),
-                this.configuracion.getSemestre(),                
+                estudiante.getPEOPLE_CODE_ID(),                             
                 event.getFile());
     }
     
     public void cargarSoporteDeclaracion(FileUploadEvent event) {
         this.archivoDeclaracionRenta = archivoService.upload(Constantes.TIPO_DECLARACION, 
-                estudiante.getPEOPLE_CODE_ID(), 
-                this.configuracion.getAnyo(),
-                this.configuracion.getSemestre(),                
+                estudiante.getPEOPLE_CODE_ID(),                                
                 event.getFile());
     }
     
     public void cargarSoporteBalance(FileUploadEvent event) {
         this.archivoBalance = archivoService.upload(Constantes.TIPO_BALANCE, 
-                estudiante.getPEOPLE_CODE_ID(), 
-                this.configuracion.getAnyo(),
-                this.configuracion.getSemestre(),                
+                estudiante.getPEOPLE_CODE_ID(),                                
                 event.getFile());
     }
     
     public void cargarSoporteIngreso(FileUploadEvent event) {
         this.archivoIngresosRetenciones = archivoService.upload(Constantes.TIPO_INGRESO_RETENCION, 
-                estudiante.getPEOPLE_CODE_ID(), 
-                this.configuracion.getAnyo(),
-                this.configuracion.getSemestre(),                
+                estudiante.getPEOPLE_CODE_ID(),                              
                 event.getFile());
     }
     
     public void cargarSoportePerdida(FileUploadEvent event) {
         this.archivoPerdidasGanancias = archivoService.upload(Constantes.TIPO_PERDIDA_GANANCIA, 
-                estudiante.getPEOPLE_CODE_ID(), 
-                this.configuracion.getAnyo(),
-                this.configuracion.getSemestre(),                
+                estudiante.getPEOPLE_CODE_ID(),                         
                 event.getFile());
     }
 
@@ -254,9 +245,20 @@ public class SoporteController implements Serializable {
     }
     
     public void guardar(){        
+        
+        
+        
         estudiante.setFechaActualizacion(new Date());
         estudiante.setActualizadoPor(FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal().getName());
+        
         estudiante = er.saveAndFlush(estudiante);
+        
+        FacesContext.getCurrentInstance().addMessage(
+                    null, new FacesMessage(
+                            FacesMessage.SEVERITY_INFO,
+                            "Soportes del estudiante actualizados",
+                            "Soportes del estudiante actualizados")
+            );
     }
     
 }

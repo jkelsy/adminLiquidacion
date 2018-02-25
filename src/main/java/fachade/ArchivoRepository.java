@@ -13,9 +13,29 @@ public abstract class ArchivoRepository
         implements EntityRepository<Archivo, Long> , 
                    CriteriaSupport<Archivo> {
     
+    public List<Archivo> findAllByTipoAndPEOPLE_CODE_ID(String tipo, String PEOPLE_CODE_ID){
+        return typedQuery("select a from Archivo a where a.tipoSoporte = ?1 and a.PEOPLE_CODE_ID = ?2 ")
+                .setParameter(1, tipo)
+                .setParameter(2, PEOPLE_CODE_ID)
+                .getResultList();
+    }
+    
+    public Archivo findByTipoAndPEOPLE_CODE_ID(String tipo, String PEOPLE_CODE_ID){
+        Archivo tempo;
+        try {
+           tempo = typedQuery("select a from Archivo a where a.tipoSoporte = ?1 and a.PEOPLE_CODE_ID = ?2 ")
+                .setParameter(1, tipo)
+                .setParameter(2, PEOPLE_CODE_ID)
+                .getSingleResult(); 
+        }catch(Exception e){
+            return null;
+        }        
+        return tempo;
+    }
+    
     public List<Archivo> findAllByPEOPLE_CODE_ID(String PEOPLE_CODE_ID){
-        return typedQuery("select a from Archivo a where a.PEOPLE_CODE_ID = ?1 ")
-                .setParameter(1, PEOPLE_CODE_ID)                
+        return typedQuery("select a from Archivo a where a.PEOPLE_CODE_ID = ?2 ")  
+                .setParameter(2, PEOPLE_CODE_ID)
                 .getResultList();
     }
     

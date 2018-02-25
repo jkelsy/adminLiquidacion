@@ -66,8 +66,6 @@ public class NombreDatasourceService implements Serializable {
                     e.setCodigoPrograma(rs.getString(Constantes.CODIGO_PROGRAMA));
                     e.setNombrePrograma(rs.getString(Constantes.NOMBRE_PROGRAMA));
 
-                    e.setAnyoLiquidacion(rs.getInt(Constantes.ANYO));
-                    e.setSemestre(rs.getString(Constantes.SEMESTRE));
                     estudianteList.add(e);
                 }
 
@@ -86,7 +84,7 @@ public class NombreDatasourceService implements Serializable {
     }
 
     //Método que carga los estudiantes de un datasource seleccionado para luego preliquidarlos
-    public List<Estudiante> cargarEstudiantesConsulta(String datasource, String sql, int anyo, String semestre) {
+    public List<Estudiante> cargarEstudiantesConsulta(String datasource, String sql) {
         Estudiante e;
         Estudiante actualizado; //estudiante que entró al formulario de actualizacion y actualizó sus datos
         List<Estudiante> estudianteList = new ArrayList();
@@ -100,36 +98,29 @@ public class NombreDatasourceService implements Serializable {
                 ResultSet rs = con.createStatement().executeQuery(sql);
 
                 while (rs.next()) {
-                    if ((rs.getInt(Constantes.ANYO) == anyo) && (rs.getString(Constantes.SEMESTRE).equals(semestre))) {
-                        e = new Estudiante();
-                        e.setPEOPLE_CODE_ID(rs.getString(Constantes.PEOPLE_CODE_ID));
+                    e = new Estudiante();
+                    e.setPEOPLE_CODE_ID(rs.getString(Constantes.PEOPLE_CODE_ID));
 
-                        e.setApellidos(rs.getString(Constantes.APELLIDOS));
-                        e.setNombres(rs.getString(Constantes.NOMBRES));
+                    e.setApellidos(rs.getString(Constantes.APELLIDOS));
+                    e.setNombres(rs.getString(Constantes.NOMBRES));
 
-                        e.setCodigoPrograma(rs.getString(Constantes.CODIGO_PROGRAMA));
-                        e.setNombrePrograma(rs.getString(Constantes.NOMBRE_PROGRAMA));
+                    e.setCodigoPrograma(rs.getString(Constantes.CODIGO_PROGRAMA));
+                    e.setNombrePrograma(rs.getString(Constantes.NOMBRE_PROGRAMA));
 
-                        e.setAnyoLiquidacion(rs.getInt(Constantes.ANYO));
-                        e.setSemestre(rs.getString(Constantes.SEMESTRE));
+                    actualizado = estudianteRepository.findByPEOPLE_CODE_ID(e.getPEOPLE_CODE_ID());
 
-                        actualizado = estudianteRepository.findByPEOPLE_CODE_IDAndAnyoAndSemestre(
-                                e.getPEOPLE_CODE_ID(),
-                                e.getAnyoLiquidacion(),
-                                e.getSemestre());
-
-                        if (actualizado != null) {
-                            e.setId(actualizado.getId());
-                            e.setNacionalidad(actualizado.getNacionalidad());
-                            e.setEstrato(actualizado.getEstrato());
-                            e.setUltimoAnyoPago(actualizado.getUltimoAnyoPago());
-                            e.setUltimoPago(actualizado.getUltimoPago());
-                            e.setPatrimonio(actualizado.getPatrimonio());
-                            e.setIngreso(actualizado.getIngreso());
-                        }
-
-                        estudianteList.add(e);
+                    if (actualizado != null) {
+                        e.setId(actualizado.getId());
+                        e.setNacionalidad(actualizado.getNacionalidad());
+                        e.setEstrato(actualizado.getEstrato());
+                        e.setUltimoAnyoPago(actualizado.getUltimoAnyoPago());
+                        e.setUltimoPago(actualizado.getUltimoPago());
+                        e.setPatrimonio(actualizado.getPatrimonio());
+                        e.setIngreso(actualizado.getIngreso());
                     }
+
+                    estudianteList.add(e);
+
                 }
                 rs.close();
                 con.close();
@@ -183,8 +174,7 @@ public class NombreDatasourceService implements Serializable {
                 if ((nombres != null) && (!nombres.isEmpty())) {
                     consulta = consulta + "  and P.FIRST_NAME like '%" + nombres + "%' ";
                 }
-
-                System.err.println(consulta);
+                //System.err.println(consulta);
 
                 ResultSet rs;
 
@@ -199,9 +189,6 @@ public class NombreDatasourceService implements Serializable {
 
                         e.setCodigoPrograma(rs.getString(Constantes.CODIGO_PROGRAMA));
                         e.setNombrePrograma(rs.getString(Constantes.NOMBRE_PROGRAMA));
-
-                        e.setAnyoLiquidacion(rs.getInt(Constantes.ANYO));
-                        e.setSemestre(rs.getString(Constantes.SEMESTRE));
 
                         estudianteList.add(e);
                     }
@@ -245,8 +232,7 @@ public class NombreDatasourceService implements Serializable {
                         + "and a.People_Code_Id = '" + liquidacion.getPEOPLE_CODE_ID() + "' "
                         + "and a.CURRICULUM = '" + liquidacion.getCodigoPrograma() + "' ";
 
-                System.err.println(consulta);
-
+                //System.err.println(consulta);
                 ResultSet rs;
 
                 try {
@@ -294,8 +280,7 @@ public class NombreDatasourceService implements Serializable {
                         + "and rv.People_Code_Id = '" + liquidacion.getPEOPLE_CODE_ID() + "' \n "
                         + "and rv.Principal = '" + flag + "'";
 
-                System.err.println(consulta);
-
+                //System.err.println(consulta);
                 ResultSet rs;
 
                 try {
@@ -355,8 +340,7 @@ public class NombreDatasourceService implements Serializable {
                         + " '0037Es06Pr',\n"
                         + " '0037Es06Sc')";
 
-                System.err.println(consulta);
-
+                //System.err.println(consulta);
                 try {
                     con.createStatement().executeUpdate(consulta);
 

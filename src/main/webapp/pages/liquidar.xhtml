@@ -1,0 +1,80 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <ui:composition template="/templates/layout.xhtml">
+        <ui:define name="header">
+            <h:outputStylesheet library="bootstrap" name="css/bootstrap.min.css"/>
+            <h:outputStylesheet library="css" name="sb-admin-2.css"/>
+            <h:outputStylesheet library="css" name="agenda.css"/>
+        </ui:define>
+        <ui:define name="content">           
+            <h:form id="form_validar">                
+                <div class="row">
+                    <div class="col-lg-12">                        
+                        <p:panel header="Estudiantes a liquidar">
+                            
+                            <p:dataTable value="#{cargar.validarBean.estudiantesALiquidar}" var="item">
+                                <p:column headerText="Apellidos">
+                                    <h:outputText value="#{item.apellidos}"/>
+                                </p:column>
+
+                                <p:column headerText="Nombres">
+                                    <h:outputText value="#{item.nombres}"/>                                                
+                                </p:column>
+                                
+                                <p:column headerText="PEOPLE_CODE_ID">
+                                    <h:outputText value="#{item.PEOPLE_CODE_ID}" />
+                                </p:column>
+
+                                <p:column headerText="Codigo Programa">
+                                    <h:outputText value="#{item.codigoPrograma}" />
+                                </p:column>
+                                <p:column headerText="Nombre Programa">
+                                    <h:outputText value="#{item.nombrePrograma}" />
+                                </p:column>                                
+                            </p:dataTable>
+                            <p:dataTable value="#{cargar.validarBean.conceptosLiquidar}" var="item">
+                                <f:facet name="header">Conceptos a LIquidar</f:facet>
+                                <p:column headerText="concepto">
+                                    <h:outputText value="#{item.nombre}"/>
+                                </p:column>
+                            </p:dataTable>
+                            <p:commandButton value="Liquidar" action="#{cargar.liquidar()}"/>
+                        </p:panel>                        
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-12">                        
+                        <p:panel header="Estudiantes que no han actualizado los soportes">
+                            <p:dataTable id="table_sin_soportes" widgetVar="table_sin_soportes" value="#{cargar.validarBean.estudiantesSinSoportes}" var="item">
+                                <p:column headerText="Apellidos">
+                                    <h:outputText value="#{item.apellidos}"/>
+                                </p:column>
+
+                                <p:column headerText="Nombres">
+                                    <h:outputText value="#{item.nombres}"/>                                                
+                                </p:column>
+                                
+                                <p:column headerText="PEOPLE_CODE_ID">
+                                    <h:outputText value="#{item.PEOPLE_CODE_ID}" />
+                                </p:column>
+
+                                <p:column headerText="Codigo Programa">
+                                    <h:outputText value="#{item.codigoPrograma}" />
+                                </p:column>
+                                <p:column headerText="Nombre Programa">
+                                    <h:outputText value="#{item.nombrePrograma}" />
+                                </p:column>                                
+                            </p:dataTable>
+                        </p:panel>                        
+                    </div>
+                </div>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>
